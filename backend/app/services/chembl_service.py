@@ -148,3 +148,4 @@ def fetch_target_bioactivities(
     }
 
     return all_activities, summary
+

@@ -136,3 +136,4 @@ def seed_default_idh1_model():
         print(f"Warning: Failed to seed default IDH1 model: {e}")
     finally:
         db.close()
+

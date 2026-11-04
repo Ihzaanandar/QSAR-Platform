@@ -209,3 +209,4 @@ def generate_fingerprints_array(smiles_list: List[str]) -> Tuple[np.ndarray, Lis
         raise ValueError("Gagal membuat Morgan Fingerprints untuk struktur molekul yang diberikan.")
 
     return np.array(fps, dtype=np.uint8), valid_indices
+

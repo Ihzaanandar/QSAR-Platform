@@ -239,3 +239,4 @@ def predict_compounds_with_model(
         "disclaimer": "Catatan: Nilai prediksi komputasional (in-silico QSAR) adalah estimasi berbasis kemiripan pola molekuler dan bukan pengganti uji aktivitas biologis in-vitro / in-vivo laboratorium.",
         "results": results
     }
+

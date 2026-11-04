@@ -636,3 +636,4 @@ export const PredictCompoundsPage: React.FC<PredictCompoundsPageProps> = ({
     </div>
   );
 };
+

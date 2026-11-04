@@ -24,7 +24,7 @@ const PROD_RAILWAY_URL = 'https://qsar-platform-production.up.railway.app';
 const rawEnvUrl = import.meta.env.VITE_API_URL;
 export const API_BASE_URL = rawEnvUrl
   ? normalizeBaseUrl(rawEnvUrl)
-  : (typeof window !== 'undefined' && window.location.hostname !== 'localhost' ? PROD_RAILWAY_URL : '');
+  : PROD_RAILWAY_URL;
 
 export async function uploadDatasetFile(file: File): Promise<ApiResponse> {
   const formData = new FormData();
