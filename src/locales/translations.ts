@@ -196,21 +196,21 @@ export const translations = {
       errorTitle: 'Gagal Memproses Prediksi',
     },
     howItWorks: {
-      tag: 'USER FLOW & WORKFLOW',
+      tag: 'ALUR KERJA PLATFORM QSAR v2.0',
       heading: 'Cara Kerja Platform',
       subtitle:
-        'Alur 3 langkah sederhana untuk memastikan dataset molekuler Anda siap sebelum diproses lebih lanjut.',
-      step1Title: 'Pilih File CSV atau Excel',
+        'Alur 3 langkah komputasi terpadu: latih model QSAR dengan data terkurasi, lalu uji bioaktivitas senyawa tanaman secara langsung.',
+      step1Title: 'Unggah & Kurasi Data Pelatihan',
       step1Desc:
-        'Pilih atau drag-and-drop file dataset Anda (.csv, .xlsx, .xls, maksimum 10 MB). Sistem mendukung format tabular umum dengan baris header.',
-      step2Title: 'Validasi Otomatis',
+        'Unggah dataset bioaktivitas target (SMILES dan nilai aktivitas numerik). Sistem melakukan pembersihan garam (salt stripping), netralisasi muatan, dan kalkulasi 1024-bit Morgan Fingerprints.',
+      step2Title: 'Pelatihan & Evaluasi Benchmark',
       step2Desc:
-        'Server membaca berkas menggunakan parser standar, memeriksa kelengkapan header, konsistensi kolom, missing values, dan baris duplikat.',
-      step3Title: 'Tinjau Ringkasan & Prediksi',
+        'Sistem membagi dataset dengan Bemis-Murcko Scaffold Split dan melatih 5 model regresi (Random Forest, Extra Trees, SVR, MLP, Dummy Baseline) dengan validasi silang GroupKFold.',
+      step3Title: 'Prediksi Senyawa Tanaman',
       step3Desc:
-        'Lihat ringkasan metrik statistik dataset, periksa baris data, jalankan prediksi bioaktivitas IDH1, dan unduh ringkasan validasi format CSV atau JSON.',
+        'Gunakan model aktif untuk memprediksi nilai pIC50 dan IC50 (nM) dari senyawa herbal, evaluasi batas kimiawi Applicability Domain (Tanimoto), dan ekspor hasil ke CSV.',
       stepOf: 'Langkah {current} dari {total}',
-      ctaStart: 'Mulai Unggah File Sekarang',
+      ctaStart: 'Mulai Latih Model QSAR Sekarang',
     },
     about: {
       tag: 'TENTANG PLATFORM & QSAR',
@@ -222,13 +222,13 @@ export const translations = {
         'QSAR adalah metode komputasi yang menghubungkan fitur struktural atau deskriptor fisikokimia dari molekul dengan aktivitas biologis, toksisitas, atau sifat kimiawi senyawa tersebut.',
       qsarP2:
         'Dalam penerapannya, kualitas dan kebersihan dataset sangat menentukan akurasi model machine learning. Kesalahan seperti baris kosong, inkonsistensi kolom, atau duplikasi dapat merusak proses pemodelan.',
-      scopeTitle: 'Batasan & Lingkup Platform v1.0',
+      scopeTitle: 'Fitur Unggulan Platform QSAR v2.0',
       scopeP1:
-        'Platform ini mengintegrasikan validasi data tabular dengan pipeline prediksi model QSAR IDH1:',
-      scopeItem1: 'Memeriksa kelayakan file CSV dan Excel (.xlsx) secara riil di backend',
-      scopeItem2: 'Mendeteksi missing values, kolom anomali, dan baris duplikat secara instan',
-      scopeItem3: 'Inferensi model Machine Learning untuk target enzim IDH1 (pIC50 & IC50 nM)',
-      scopeItem4: 'Pemeriksaan Applicability Domain berbasis kemiripan fingerprint Tanimoto',
+        'Platform ini mengintegrasikan standarisasi kemoinformatika otomatis, benchmark multi-regresi, dan inferensi senyawa tanaman:',
+      scopeItem1: 'Standarisasi molekuler otomatis: salt stripping, uncharging, dan canonical isomeric SMILES',
+      scopeItem2: 'Generasi 1024-bit Morgan Fingerprints (ECFP4) dan Bemis-Murcko Scaffold Split',
+      scopeItem3: 'Benchmark multi-regresi: Random Forest, Extra Trees, SVR, MLP, dan GroupKFold CV (R², Q², RMSE)',
+      scopeItem4: 'Prediksi bioaktivitas senyawa tanaman (pIC50, IC50 nM) dan evaluasi Applicability Domain Tanimoto',
     },
     footer: {
       brandDesc:
@@ -436,21 +436,21 @@ export const translations = {
       errorTitle: 'Prediction Failed',
     },
     howItWorks: {
-      tag: 'USER FLOW & WORKFLOW',
+      tag: 'QSAR PLATFORM WORKFLOW v2.0',
       heading: 'How The Platform Works',
       subtitle:
-        'Simple 3-step workflow to ensure your molecular dataset is ready before further downstream processing.',
-      step1Title: 'Select CSV or Excel File',
+        'A comprehensive 3-step in-session workflow: train custom QSAR models with curated data, then immediately predict plant compound bioactivities.',
+      step1Title: 'Upload & Curate Training Data',
       step1Desc:
-        'Choose or drag-and-drop your dataset file (.csv, .xlsx, .xls, max 10 MB). Supports common tabular formats with header row.',
-      step2Title: 'Automated Validation',
+        'Upload molecular target bioactivity dataset (SMILES and activity values). The pipeline executes RDKit salt stripping, charge neutralization, and 1024-bit Morgan Fingerprint generation.',
+      step2Title: 'Benchmark Training & Evaluation',
       step2Desc:
-        'Server parses the file using standard engines, verifying header completeness, column consistency, missing values, and duplicate rows.',
-      step3Title: 'Review Summary & Predict',
+        'Dataset is partitioned using Bemis-Murcko Scaffold Split to train benchmark regressors (Random Forest, Extra Trees, SVR, MLP, Dummy Baseline) verified with GroupKFold cross-validation.',
+      step3Title: 'Predict Plant Compounds',
       step3Desc:
-        'Inspect dataset statistical metrics, preview data rows, run IDH1 bioactivity predictions, and export validation summaries to CSV or JSON.',
+        'Utilize the active session model to predict pIC50 and IC50 (nM) for herbal compounds, assess Applicability Domain (Tanimoto similarity), and export predictions to CSV.',
       stepOf: 'Step {current} of {total}',
-      ctaStart: 'Start Uploading File Now',
+      ctaStart: 'Start Training QSAR Model Now',
     },
     about: {
       tag: 'ABOUT PLATFORM & QSAR',
@@ -462,13 +462,13 @@ export const translations = {
         'QSAR is a computational methodology linking chemical structural features or physicochemical descriptors of molecules with biological activity, toxicity, or pharmacological properties.',
       qsarP2:
         'In practice, dataset cleanliness directly governs the accuracy of machine learning models. Errors such as blank lines, column misalignment, or formatting inconsistencies impair molecular modeling.',
-      scopeTitle: 'Platform Scope & Machine Learning',
+      scopeTitle: 'Platform Scope & Multi-Target QSAR v2.0',
       scopeP1:
-        'The platform integrates tabular data validation with the IDH1 QSAR prediction pipeline:',
-      scopeItem1: 'Automated validation of CSV and Excel spreadsheets in real-time',
-      scopeItem2: 'Instant detection of missing values, anomalies, and duplicate entries',
-      scopeItem3: 'Machine learning inference for IDH1 enzyme inhibitors (pIC50 & IC50 nM)',
-      scopeItem4: 'Tanimoto similarity calculation for Applicability Domain assurance',
+        'The platform integrates automated cheminformatics curation, multi-regression benchmarking, and plant compound bioactivity inference:',
+      scopeItem1: 'Automated molecular curation: salt stripping, charge neutralization, and canonical isomeric SMILES',
+      scopeItem2: '1024-bit Morgan Fingerprints (ECFP4) and Bemis-Murcko Scaffold Partitioning',
+      scopeItem3: 'Benchmarked regressors: Random Forest, Extra Trees, SVR, MLP, and GroupKFold CV (R², Q², RMSE)',
+      scopeItem4: 'Plant compound inference (pIC50 & IC50 nM) with Tanimoto Applicability Domain assurance',
     },
     footer: {
       brandDesc:

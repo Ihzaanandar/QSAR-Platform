@@ -1,5 +1,5 @@
 import React from 'react';
-import { Upload, CheckSquare, Eye, ArrowRight } from 'lucide-react';
+import { FileSpreadsheet, Brain, Play, ArrowRight } from 'lucide-react';
 import { useLanguage } from '../context/LanguageContext';
 
 interface HowItWorksProps {
@@ -14,19 +14,19 @@ export const HowItWorksSection: React.FC<HowItWorksProps> = ({ onStartUpload }) 
       number: '01',
       title: t.howItWorks.step1Title,
       description: t.howItWorks.step1Desc,
-      icon: Upload,
+      icon: FileSpreadsheet,
     },
     {
       number: '02',
       title: t.howItWorks.step2Title,
       description: t.howItWorks.step2Desc,
-      icon: CheckSquare,
+      icon: Brain,
     },
     {
       number: '03',
       title: t.howItWorks.step3Title,
       description: t.howItWorks.step3Desc,
-      icon: Eye,
+      icon: Play,
     },
   ];
 
