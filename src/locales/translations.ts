@@ -213,32 +213,32 @@ export const translations = {
       ctaStart: 'Mulai Latih Model QSAR Sekarang',
     },
     about: {
-      tag: 'TENTANG PLATFORM & QSAR',
-      heading: 'Mengenal QSAR & Lingkup Platform',
+      tag: 'TENTANG PLATFORM & QSAR v2.0',
+      heading: 'Mengenal QSAR & Ruang Lingkup Platform v2.0',
       subtitle:
-        'Memahami peran validasi data tabular dalam studi hubungan kuantitatif struktur-aktivitas kimia dan farmasi.',
+        'Platform pemodelan QSAR multi-target dan prediksi bioaktivitas senyawa tanaman berbasis machine learning.',
       qsarTitle: 'Apa itu QSAR (Quantitative Structure-Activity Relationship)?',
       qsarP1:
-        'QSAR adalah metode komputasi yang menghubungkan fitur struktural atau deskriptor fisikokimia dari molekul dengan aktivitas biologis, toksisitas, atau sifat kimiawi senyawa tersebut.',
+        'QSAR adalah metode komputasi kemoinformatika yang menghubungkan fitur struktural molekul (sidik jari Morgan ECFP4) dengan aktivitas biologis kuantitatif (pIC50, IC50 nM).',
       qsarP2:
-        'Dalam penerapannya, kualitas dan kebersihan dataset sangat menentukan akurasi model machine learning. Kesalahan seperti baris kosong, inkonsistensi kolom, atau duplikasi dapat merusak proses pemodelan.',
-      scopeTitle: 'Fitur Unggulan Platform QSAR v2.0',
+        'Dengan pendekatan in-session zero-storage, peneliti dapat melatih model benchmark multi-regresi (Random Forest, Extra Trees, SVR, MLP) dan langsung menguji senyawa herbal tanaman tanpa beban kuota penyimpanan cloud.',
+      scopeTitle: 'Ruang Lingkup & Kemampuan Platform v2.0',
       scopeP1:
-        'Platform ini mengintegrasikan standarisasi kemoinformatika otomatis, benchmark multi-regresi, dan inferensi senyawa tanaman:',
-      scopeItem1: 'Standarisasi molekuler otomatis: salt stripping, uncharging, dan canonical isomeric SMILES',
-      scopeItem2: 'Generasi 1024-bit Morgan Fingerprints (ECFP4) dan Bemis-Murcko Scaffold Split',
-      scopeItem3: 'Benchmark multi-regresi: Random Forest, Extra Trees, SVR, MLP, dan GroupKFold CV (R², Q², RMSE)',
-      scopeItem4: 'Prediksi bioaktivitas senyawa tanaman (pIC50, IC50 nM) dan evaluasi Applicability Domain Tanimoto',
+        'Platform ini mengintegrasikan alur kemoinformatika otomatis sesuai pedoman validasi OECD:',
+      scopeItem1: 'Kurasi & standarisasi RDKit otomatis (salt stripping, uncharging, canonical isomeric SMILES)',
+      scopeItem2: 'Bemis-Murcko Scaffold Split (80/20) dan validasi silang internal GroupKFold (Q²)',
+      scopeItem3: 'Benchmark multi-algoritma regresi otomatis dengan metrik R², RMSE, MAE, Q², dan Spearman',
+      scopeItem4: 'Prediksi aktivitas senyawa tanaman (pIC50 & IC50 nM) dan uji batas kimiawi Applicability Domain (Tanimoto)',
     },
     footer: {
       brandDesc:
-        'Platform validasi dataset molekuler dan prediksi bioaktivitas untuk penelitian QSAR (Quantitative Structure-Activity Relationship).',
+        'Platform Pemodelan QSAR Multi-Target & Prediksi Bioaktivitas Senyawa Tanaman Berbasis Machine Learning.',
       specTitle: 'Spesifikasi Sistem:',
       specFrontend: 'Frontend: React & Tailwind CSS (Vercel-ready)',
       specBackend: 'Backend: Python FastAPI / Node.js Engine (RDKit & Scikit-learn)',
-      specProtocol: 'Protokol: REST API multipart/form-data & JSON',
-      rights: '© 2026 QSAR Platform (Prototype v1.0). All rights reserved.',
-      note: 'Dibuat untuk evaluasi dan demonstrasi alur unggah serta prediksi model QSAR.',
+      specProtocol: 'Protokol: REST API JSON (In-Session Zero Storage)',
+      rights: '© 2026 QSAR Platform (Version 2.0). All rights reserved.',
+      note: 'Dirancang untuk pemodelan QSAR multi-target, benchmark regresi, dan skrining in silico senyawa herbal.',
     },
   },
   en: {
@@ -453,16 +453,16 @@ export const translations = {
       ctaStart: 'Start Training QSAR Model Now',
     },
     about: {
-      tag: 'ABOUT PLATFORM & QSAR',
-      heading: 'Understanding QSAR & Platform Scope',
+      tag: 'ABOUT PLATFORM & QSAR v2.0',
+      heading: 'Understanding QSAR & Platform Scope v2.0',
       subtitle:
-        'Learn the critical role of tabular data validation in quantitative structure-activity relationship studies.',
+        'Multi-target QSAR modeling and plant compound bioactivity prediction powered by machine learning and OECD principles.',
       qsarTitle: 'What is QSAR (Quantitative Structure-Activity Relationship)?',
       qsarP1:
-        'QSAR is a computational methodology linking chemical structural features or physicochemical descriptors of molecules with biological activity, toxicity, or pharmacological properties.',
+        'QSAR is a cheminformatics computational methodology linking molecular structural fingerprints (Morgan ECFP4) with quantitative biological activity endpoints (pIC50, IC50 nM).',
       qsarP2:
-        'In practice, dataset cleanliness directly governs the accuracy of machine learning models. Errors such as blank lines, column misalignment, or formatting inconsistencies impair molecular modeling.',
-      scopeTitle: 'Platform Scope & Multi-Target QSAR v2.0',
+        'With an in-session zero-storage approach, researchers can benchmark multi-regression models (Random Forest, Extra Trees, SVR, MLP) and immediately evaluate herbal plant compounds without cloud persistent storage limits.',
+      scopeTitle: 'Platform Scope & Capabilities v2.0',
       scopeP1:
         'The platform integrates automated cheminformatics curation, multi-regression benchmarking, and plant compound bioactivity inference:',
       scopeItem1: 'Automated molecular curation: salt stripping, charge neutralization, and canonical isomeric SMILES',
@@ -472,13 +472,13 @@ export const translations = {
     },
     footer: {
       brandDesc:
-        'Molecular dataset validation and bioactivity prediction platform for QSAR research.',
+        'Multi-Target QSAR Modeling & Plant Compound Bioactivity Prediction Platform Powered by Machine Learning.',
       specTitle: 'System Specifications:',
       specFrontend: 'Frontend: React & Tailwind CSS (Vercel-ready)',
       specBackend: 'Backend: Python FastAPI / Node.js Engine (RDKit & Scikit-learn)',
-      specProtocol: 'Protocol: REST API multipart/form-data & JSON',
-      rights: '© 2026 QSAR Platform (Prototype v1.0). All rights reserved.',
-      note: 'Built for molecular data evaluation, format validation, and automated IDH1 QSAR prediction.',
+      specProtocol: 'Protocol: REST API JSON (In-Session Zero Storage)',
+      rights: '© 2026 QSAR Platform (Version 2.0). All rights reserved.',
+      note: 'Engineered for multi-target QSAR modeling, benchmark regression, and in silico herbal screening.',
     },
   },
 };
