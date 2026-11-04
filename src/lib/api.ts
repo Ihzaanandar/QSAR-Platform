@@ -12,9 +12,36 @@ export async function uploadDatasetFile(file: File): Promise<ApiResponse> {
       body: formData,
     });
 
+    const contentType = response.headers.get('content-type') || '';
+    if (!contentType.includes('application/json')) {
+      if (!API_BASE_URL && typeof window !== 'undefined' && window.location.hostname !== 'localhost') {
+        return {
+          success: false,
+          message: 'Backend API belum terhubung ke Vercel.',
+          errors: [
+            'Frontend Vercel belum mengetahui URL backend Railway Anda. Silakan tambahkan Environment Variable "VITE_API_URL" pada dashboard Vercel, lalu klik Redeploy.',
+          ],
+        };
+      }
+      return {
+        success: false,
+        message: 'Server backend tidak merespons dalam format JSON.',
+        errors: [`Status server: ${response.status} ${response.statusText}. Pastikan server backend sedang aktif.`],
+      };
+    }
+
     const data = await response.json();
     return data as ApiResponse;
   } catch (error: any) {
+    if (!API_BASE_URL && typeof window !== 'undefined' && window.location.hostname !== 'localhost') {
+      return {
+        success: false,
+        message: 'Backend API belum terhubung ke Vercel.',
+        errors: [
+          'Frontend Vercel belum mengetahui URL backend Railway Anda. Silakan tambahkan Environment Variable "VITE_API_URL" pada dashboard Vercel, lalu klik Redeploy.',
+        ],
+      };
+    }
     return {
       success: false,
       message: 'Gagal terhubung ke server backend.',
@@ -35,6 +62,15 @@ export async function runQsarPrediction(
       },
       body: JSON.stringify({ smiles_column: smilesColumn }),
     });
+
+    const contentType = response.headers.get('content-type') || '';
+    if (!contentType.includes('application/json')) {
+      return {
+        success: false,
+        message: 'Gagal terhubung ke model QSAR.',
+        errors: [`Respons server bukan JSON (Status ${response.status}). Pastikan backend Railway aktif.`],
+      };
+    }
 
     const data = await response.json();
     return data;

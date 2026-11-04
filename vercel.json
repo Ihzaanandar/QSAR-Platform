@@ -5,6 +5,14 @@
   "installCommand": "npm install --legacy-peer-deps",
   "rewrites": [
     {
+      "source": "/api/:path*",
+      "destination": "https://qsar-platform-production.up.railway.app/api/:path*"
+    },
+    {
+      "source": "/health",
+      "destination": "https://qsar-platform-production.up.railway.app/health"
+    },
+    {
       "source": "/(.*)",
       "destination": "/index.html"
     }
