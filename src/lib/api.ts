@@ -1,11 +1,21 @@
 import { ApiResponse, QsarPredictionResult, ProblematicRowItem } from '../types/dataset';
 
+function normalizeBaseUrl(url?: string): string {
+  if (!url) return '';
+  let clean = url.trim().replace(/\/$/, '');
+  // If user entered domain without protocol (e.g. qsar-platform-production.up.railway.app), prepend https://
+  if (clean && !clean.startsWith('http://') && !clean.startsWith('https://')) {
+    clean = `https://${clean}`;
+  }
+  return clean;
+}
+
 const PROD_RAILWAY_URL = 'https://qsar-platform-production.up.railway.app';
 
-export const API_BASE_URL = (
-  import.meta.env.VITE_API_URL ||
-  (typeof window !== 'undefined' && window.location.hostname !== 'localhost' ? PROD_RAILWAY_URL : '')
-).replace(/\/$/, '');
+const rawEnvUrl = import.meta.env.VITE_API_URL;
+export const API_BASE_URL = rawEnvUrl
+  ? normalizeBaseUrl(rawEnvUrl)
+  : (typeof window !== 'undefined' && window.location.hostname !== 'localhost' ? PROD_RAILWAY_URL : '');
 
 export async function uploadDatasetFile(file: File): Promise<ApiResponse> {
   const formData = new FormData();
