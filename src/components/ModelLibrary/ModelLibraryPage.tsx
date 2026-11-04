@@ -251,17 +251,15 @@ export const ModelLibraryPage: React.FC<ModelLibraryPageProps> = ({
                   <Download className="w-4 h-4" />
                 </a>
 
-                {m.id !== 'idh1_general_default' && (
-                  <button
-                    type="button"
-                    disabled={deletingId === m.id}
-                    onClick={() => handleDelete(m.id, m.model_name)}
-                    title="Hapus Model"
-                    className="p-2 rounded-lg border border-rose-200 text-rose-600 hover:bg-rose-50 transition-colors cursor-pointer disabled:opacity-50"
-                  >
-                    <Trash2 className="w-4 h-4" />
-                  </button>
-                )}
+                <button
+                  type="button"
+                  disabled={deletingId === m.id}
+                  onClick={() => handleDelete(m.id, m.model_name)}
+                  title={isId ? 'Hapus Model' : 'Delete Model'}
+                  className="p-2 rounded-lg border border-rose-200 text-rose-600 hover:bg-rose-50 transition-colors cursor-pointer disabled:opacity-50"
+                >
+                  <Trash2 className="w-4 h-4" />
+                </button>
               </div>
             </div>
           ))}
