@@ -383,7 +383,7 @@ export const PredictCompoundsPage: React.FC<PredictCompoundsPageProps> = ({
 
                     {/* Download CSV */}
                     <a
-                      href={getPredictionDownloadUrl(predictionResult.prediction_id)}
+                      href={predictionResult.download_url || getPredictionDownloadUrl(predictionResult.prediction_id)}
                       download={`qsar_predictions_${predictionResult.prediction_id}.csv`}
                       className="inline-flex items-center gap-1.5 px-3 py-1 rounded-md bg-blue-600 text-white text-xs font-semibold hover:bg-blue-700 transition-colors shadow-xs"
                     >
