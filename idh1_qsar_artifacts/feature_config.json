@@ -1,0 +1,20 @@
+{
+  "input_smiles_column": "Smiles",
+  "standardization": [
+    "RDKit MolFromSmiles + sanitization",
+    "rdMolStandardize.Cleanup",
+    "rdMolStandardize.FragmentParent",
+    "rdMolStandardize.Uncharger",
+    "Canonical isomeric SMILES"
+  ],
+  "fingerprint": {
+    "type": "Morgan",
+    "radius": 2,
+    "n_bits": 1024,
+    "include_chirality": false,
+    "representation": "binary"
+  },
+  "target_transform": "pIC50 = 9 - log10(IC50_nM)",
+  "prediction_back_transform": "IC50_nM = 10 ** (9 - predicted_pIC50)",
+  "target_scope": "Pooled/general IDH1; not mutation-specific"
+}

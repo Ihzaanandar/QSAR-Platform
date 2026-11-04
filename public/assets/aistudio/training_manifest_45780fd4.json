@@ -1,0 +1,9 @@
+{
+  "training_file": "IDH1_training.csv",
+  "training_file_sha256": "2a05590578f1d82cb7e5bdc3d0bf3f746e8bb01b92745e1bae08d52ba90b89de",
+  "screening_file": "mengkudu_smiles.csv",
+  "screening_file_sha256": "78368964023bdab3cb195c5e2132c0de8a851bd37f304bd48a246ad307cb4d5d",
+  "model_file": "idh1_general_qsar.joblib",
+  "created_utc": "2026-10-30T05:47:17.858132+00:00",
+  "note": "Pooled/general IDH1 IC50 regression model; not mutation-specific."
+}

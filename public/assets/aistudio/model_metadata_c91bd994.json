@@ -1,0 +1,41 @@
+{
+  "model_name": "RandomForest",
+  "target": "IDH1",
+  "target_chembl_id": "CHEMBL2007625",
+  "target_organism": "Homo sapiens",
+  "target_scope": "General pooled across eligible IC50 records; not wild-type-specific or mutation-specific",
+  "endpoint": "IC50",
+  "prediction_target": "pIC50",
+  "training_measurements_after_curation": 6935,
+  "training_unique_molecules": 4235,
+  "unique_scaffold_groups": 1202,
+  "best_parameters": {},
+  "holdout_metrics": {
+    "Selected_Model": "RandomForest",
+    "R2_Test": 0.5021686904142599,
+    "External_Q2_Test": 0.5022599587137961,
+    "RMSE_Test": 0.5920454890389387,
+    "MAE_Test": 0.43500891238411327,
+    "MedianAE_Test": 0.3293967279025489,
+    "Spearman_Test": 0.7132342825266669,
+    "R2_Train_Diagnostic": 0.9168316222841457,
+    "Train_Molecules": 3388,
+    "Test_Molecules": 847,
+    "Test_Scaffold_Groups": 241
+  },
+  "split": {
+    "method": "Murcko scaffold GroupShuffleSplit sample-size-balanced candidate search",
+    "test_fraction_requested": 0.2,
+    "random_seed_selected": 579,
+    "cv": "GroupKFold(3)"
+  },
+  "software": {
+    "python": "3.13.18",
+    "rdkit": "2026.09.1",
+    "scikit_learn": "1.6.1",
+    "numpy": "2.1.3",
+    "pandas": "2.2.3",
+    "joblib": "1.6.0"
+  },
+  "created_utc": "2026-10-30T05:46:37.216815+00:00"
+}

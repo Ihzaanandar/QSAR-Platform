@@ -1,0 +1,740 @@
+# PRODUCT REQUIREMENTS DOCUMENT (PRD)
+
+## QSAR Platform — Prototype v1.0
+
+**Document status:** Ready for prototype implementation  
+**Date:** 30 October 2026  
+**Product type:** Web application  
+**Primary language:** Indonesian interface (English scientific terms may be retained where appropriate)  
+**Frontend deployment:** Vercel  
+**Backend deployment:** Railway  
+
+---
+
+## 1. Product Overview
+
+QSAR Platform is a web application concept intended to let users submit molecular/chemical datasets for future QSAR analysis. The long-term product is expected to include user accounts, credit-based usage, QRIS payments through DOKU, QSAR model execution, and analysis history.
+
+This document defines **Prototype v1.0 only**. The current prototype must demonstrate a real end-to-end CSV upload flow. A visitor can open the website, choose a CSV file, send it to the backend, have the backend read and validate the file, and view a summary and sample rows.
+
+The prototype does **not** run a QSAR model and must not show fabricated predictions or claim that a dataset is ready for a specific QSAR model.
+
+### Product statement
+
+A simple web platform for uploading, reading, and checking CSV datasets as the first step toward a future QSAR analysis service.
+
+### Main prototype outcome
+
+A user can successfully complete this journey:
+
+**Home → Upload CSV → Backend reads and validates CSV → View dataset summary and preview.**
+
+---
+
+## 2. Goals and Success Criteria
+
+### 2.1 Goals
+
+1. Present the QSAR platform concept through a professional, credible landing page.
+2. Allow visitors to select or drag and drop a `.csv` file.
+3. Send the actual file from the browser to the FastAPI backend hosted on Railway.
+4. Read and inspect the CSV using Python/Pandas on the backend.
+5. Show useful validation results, dataset metadata, and a preview of the first rows.
+6. Store the uploaded file and its metadata during the prototype, using private storage.
+7. Establish an architecture that can later accommodate authentication, payments, credit balances, and QSAR inference without rebuilding the application.
+
+### 2.2 Success criteria
+
+The prototype is successful when:
+
+- A visitor can open the deployed website without creating an account.
+- A visitor can select a CSV file using the file picker or drag-and-drop area.
+- The frontend sends the file to the Railway API, not merely to browser-side mock logic.
+- The backend can parse a valid CSV and return a real summary.
+- The frontend displays the real backend response, including rows, columns, missing values, duplicates, and a data preview.
+- An invalid or unreadable file produces a clear error message.
+- The prototype works on desktop and mobile viewport sizes.
+- No login, payment, coin, or QSAR prediction feature is presented as an active feature.
+
+---
+
+## 3. Scope
+
+### 3.1 Included in Prototype v1.0
+
+- Responsive landing page.
+- Basic navigation: Home, About, How It Works, Upload Dataset.
+- Short explanation of QSAR and the platform's current prototype limitations.
+- CSV upload page.
+- Drag-and-drop and browse-file upload interactions.
+- CSV file extension and size checks.
+- Real upload to FastAPI backend through REST API.
+- Backend CSV parsing with Pandas.
+- Basic structural validation.
+- Dataset summary.
+- Preview of the first 10 rows (or fewer if the file contains fewer rows).
+- Success, processing, warning, and error states.
+- Private file storage on a Railway persistent volume.
+- PostgreSQL metadata record for each upload.
+- Health-check endpoint and basic deployment configuration.
+
+### 3.2 Explicitly excluded from Prototype v1.0
+
+Do not implement or simulate these as working features:
+
+- User registration, login, password reset, or user profile.
+- Wallet, coins, credits, quota deduction, or subscription.
+- DOKU, QRIS, payment checkout, or transaction history.
+- QSAR model training, model loading, prediction, classification, regression, or molecular activity evaluation.
+- SMILES-specific or molecular-descriptor-specific required-column validation.
+- Model result dashboards, charts of predicted activity, downloadable prediction reports, or model comparison.
+- User dataset history page or account-based file library.
+- Admin dashboard, role management, or multi-tenant permissions.
+
+These are future product phases and must not appear as functional buttons in the prototype. They may be mentioned briefly in a clearly labelled “Planned for a future version” section if needed.
+
+---
+
+## 4. Target Users
+
+Primary users for the prototype:
+
+- Researchers and students who work with chemical or molecular datasets.
+- Academics or professionals who may use QSAR tools in the future.
+- First-time visitors evaluating whether the platform is easy to use.
+
+The prototype is intended to validate the upload experience, not the scientific validity of a QSAR model.
+
+---
+
+## 5. Important Product Decision: CSV Schema
+
+The QSAR model and its required input schema have not been finalized. Therefore, the prototype must accept a **generic tabular CSV** and perform only general file/data checks.
+
+Do not assume that every user file contains a `SMILES`, `activity`, `MolWt`, `LogP`, or any other fixed column. Do not require a particular scientific column name in v1.0.
+
+The backend may report column names and data types, but it must not conclude that the file is suitable for a future QSAR model.
+
+Suggested user-facing explanation:
+
+> Untuk versi prototype, platform memeriksa struktur dasar file CSV. Pemeriksaan kesesuaian kolom dan analisis QSAR akan ditambahkan setelah format input model ditetapkan.
+
+The product team must define the final QSAR input schema when the model pipeline is ready.
+
+---
+
+## 6. User Flow
+
+### Main flow
+
+1. Visitor opens the landing page.
+2. Visitor reads the short platform description and clicks **Upload Dataset** or **Get Started**.
+3. Visitor arrives at the Upload Dataset page.
+4. Visitor chooses a `.csv` file or drags it into the upload area.
+5. Frontend checks basic client-side constraints, such as file extension and configured maximum size.
+6. Visitor clicks **Upload and Validate**.
+7. Frontend sends the real file to the FastAPI endpoint using `multipart/form-data`.
+8. Backend receives the file, checks it, reads it with Pandas, calculates summary statistics, and stores the original file and metadata if accepted.
+9. Frontend displays the result returned by the backend.
+10. If valid, visitor sees the dataset summary and preview table. If invalid, visitor sees the error and can choose another file.
+
+### State flow
+
+`Empty` → `File Selected` → `Uploading / Validating` → either `Valid` or `Error`.
+
+A user can remove or replace the selected file before submission. After a successful upload, the user can choose to upload another file. The prototype does not provide a persistent history page.
+
+---
+
+## 7. Information Architecture and Pages
+
+### 7.1 Home (`/`)
+
+Purpose: explain the product and guide visitors to upload a dataset.
+
+Required sections:
+
+1. **Navbar**
+   - Text-based or simple geometric QSAR logo.
+   - Home.
+   - About.
+   - How It Works.
+   - Upload Dataset (primary CTA).
+   - No Login or Register button.
+
+2. **Hero section**
+   - Suggested headline: “Prepare Your Molecular Data for QSAR Analysis”.
+   - Suggested supporting text: “Upload a CSV dataset and review its structure in a few simple steps.”
+   - Primary CTA: “Upload Dataset”.
+   - Secondary CTA: “How It Works” or “Learn More”.
+   - Use a subtle abstract molecular / connected-node illustration. Do not use a fake prediction chart.
+
+3. **Platform introduction**
+   - Explain QSAR in simple terms.
+   - Explain that the current prototype supports CSV upload and inspection only.
+
+4. **How It Works**
+   - Step 1: Choose CSV.
+   - Step 2: Upload and validate.
+   - Step 3: Review dataset summary and preview.
+
+5. **Prototype notice**
+   - Clearly state that QSAR prediction, user accounts, and payments are not available in this prototype.
+
+6. **Footer**
+   - Product name.
+   - Short description.
+   - Navigation links.
+   - Contact placeholder only if no real contact is supplied. Do not invent contact details.
+
+### 7.2 Upload Dataset (`/upload`)
+
+Purpose: allow a visitor to submit a real CSV file.
+
+Required components:
+
+- Page title: “Upload Your Dataset”.
+- Short helper text describing the upload and validation process.
+- Large drag-and-drop zone.
+- Browse / Choose File button.
+- Accepted format label: `.csv`.
+- Configured maximum file size label.
+- Selected-file card showing file name and size.
+- Remove / Replace control.
+- Upload and Validate button.
+- Small CSV guidance panel:
+  - Include a header row.
+  - Use a consistent number of fields per row.
+  - Use comma-separated values for the prototype.
+  - Save the file using UTF-8 or UTF-8 with BOM encoding.
+- Privacy/prototype notice: users should not upload confidential or sensitive data because this version has no account-based access control.
+
+The upload button must be disabled when no file is selected or while a request is in progress.
+
+### 7.3 Dataset Result (`/upload` result state or `/datasets/[id]`)
+
+Purpose: display the real result of backend processing.
+
+Required content:
+
+- Clear status: “CSV berhasil diunggah dan dibaca” or equivalent.
+- Explicit note: “Analisis/prediksi QSAR belum tersedia pada prototype ini.”
+- Dataset summary card.
+- Validation status card.
+- Column information.
+- Data preview table (first 10 rows maximum).
+- Button: “Upload Another Dataset”.
+
+Dataset summary fields:
+
+- Original file name.
+- File size.
+- Total rows.
+- Total columns.
+- Column names.
+- Total missing values.
+- Missing values per column (can be shown in a collapsible detail section).
+- Duplicate row count.
+- Upload timestamp.
+- Validation status.
+
+Do not show model metrics, prediction labels, activity predictions, confidence scores, or QSAR charts.
+
+### 7.4 About / How It Works
+
+These can be sections on the Home page rather than separate routes for v1.0. Keep content concise and avoid unsupported scientific claims.
+
+---
+
+## 8. Functional Requirements
+
+| ID | Requirement | Priority | Acceptance condition |
+|---|---|---|---|
+| FR-01 | Landing page | Must | Home page loads and provides an upload CTA. |
+| FR-02 | Navigation | Must | Home, About, How It Works, and Upload links work. |
+| FR-03 | File picker | Must | User can select a local `.csv` file. |
+| FR-04 | Drag and drop | Should | User can drop a `.csv` file into the upload zone. |
+| FR-05 | File constraints | Must | Non-CSV and oversized files are rejected with a clear message. |
+| FR-06 | Real API upload | Must | Selected file is sent to Railway FastAPI using multipart form data. |
+| FR-07 | CSV parsing | Must | Backend reads the uploaded CSV with Pandas. |
+| FR-08 | Structural validation | Must | Backend checks readable content, header, rows, and consistent structure. |
+| FR-09 | Missing value summary | Must | Backend returns total and per-column missing values. |
+| FR-10 | Duplicate row summary | Should | Backend returns the number of duplicate rows. |
+| FR-11 | Dataset metadata | Must | Backend returns filename, file size, row/column counts, and columns. |
+| FR-12 | Dataset preview | Must | Frontend displays up to the first 10 rows returned by the backend. |
+| FR-13 | Loading state | Must | User sees a clear uploading/validating state while waiting. |
+| FR-14 | Error handling | Must | User sees readable errors and can retry with another file. |
+| FR-15 | Upload success state | Must | User sees actual backend results, not hard-coded demo data. |
+| FR-16 | Private file storage | Must | Original file is stored outside the public web root. |
+| FR-17 | Metadata persistence | Should | Upload metadata is stored in PostgreSQL. |
+| FR-18 | Responsive design | Must | Core journey works on desktop and mobile. |
+
+---
+
+## 9. CSV Validation Rules for Prototype v1.0
+
+The validation layer is generic and independent of a future QSAR model.
+
+### 9.1 Hard errors (reject the upload)
+
+- File is missing.
+- File extension is not `.csv`.
+- File exceeds the configured maximum upload size.
+- File is empty or contains no data rows.
+- File cannot be decoded using supported encodings.
+- CSV cannot be parsed due to malformed structure.
+- Header is absent, blank, or contains duplicate/empty column names after normalization.
+- Data rows have inconsistent field counts and cannot be parsed safely.
+
+### 9.2 Warnings (allow upload, but show the warning)
+
+- One or more missing values exist.
+- Duplicate rows exist.
+- A column appears to contain mixed data types.
+- A column contains only one distinct value.
+
+Warnings must not be described as proof that the dataset is scientifically valid or invalid for QSAR. The model-specific validator will be defined later.
+
+### 9.3 Initial file settings
+
+- Allowed extension: `.csv`.
+- Initial configurable maximum size: **10 MB** for the public prototype.
+- Preferred encoding: UTF-8 / UTF-8 with BOM.
+- Expected delimiter: comma.
+- Preview size: first 10 rows.
+- The 10 MB limit should be stored in configuration/environment settings rather than duplicated as a magic number throughout the code.
+
+If the team later changes the size limit, update the backend configuration and the UI label together.
+
+---
+
+## 10. UI States and Messages
+
+### Empty upload state
+
+Title: “Upload Your Dataset”  
+Helper: “Choose a CSV file to inspect its structure and preview the data.”  
+Drop zone: “Drag and drop your CSV file here”  
+Button: “Browse File”
+
+### Selected file state
+
+Show file icon, file name, file size, and Remove / Replace action. Show Upload and Validate button.
+
+### Uploading state
+
+Show spinner or progress indicator and message: “Uploading and validating your CSV file...” Disable duplicate submission while in progress.
+
+### Successful structural validation
+
+Title: “Dataset uploaded successfully”  
+Message: “The CSV file was uploaded, read, and passed the basic structural checks.”  
+Notice: “QSAR model analysis is not available in this prototype.”
+
+### Successful upload with warnings
+
+Show success status plus warning summary. Missing values or duplicate rows should be clearly distinguished from hard errors.
+
+### Error state
+
+Show a concise explanation of what failed and a clear recovery action such as “Choose another file”. Do not show raw stack traces or internal server paths.
+
+---
+
+## 11. Technical Architecture
+
+### 11.1 Technology stack
+
+| Layer | Technology | Responsibility |
+|---|---|---|
+| Frontend | Next.js + TypeScript | Pages, navigation, upload UI, result display |
+| Styling | Tailwind CSS | Responsive styling |
+| UI components | shadcn/ui (optional) | Reusable accessible components |
+| Frontend hosting | Vercel | Public web application |
+| Backend | Python + FastAPI | File receiving, parsing, validation, API responses |
+| CSV processing | Pandas | CSV loading and dataset inspection |
+| Numerical utilities | NumPy | Supporting data operations if needed |
+| Request/response schemas | Pydantic | API response validation |
+| Multipart handling | python-multipart | Receiving uploaded files |
+| Database | PostgreSQL | Dataset upload metadata |
+| ORM | SQLAlchemy | Database access |
+| Backend hosting | Railway | FastAPI service and database |
+| File persistence | Railway Volume | Private uploaded CSV storage |
+| Version control | GitHub | Source code and deployment integration |
+
+### 11.2 Deployment topology
+
+- Frontend is deployed from `/frontend` to Vercel.
+- Backend is deployed from `/backend` to Railway.
+- PostgreSQL is provisioned on Railway or connected as a managed PostgreSQL service.
+- A Railway persistent volume is mounted for uploaded files, for example at `/data/uploads`.
+- Browser sends the file directly to the FastAPI API over HTTPS.
+- Backend returns JSON metadata and preview data to the frontend.
+- CORS allows only the deployed frontend origin(s) and approved local development origins.
+
+### 11.3 Data flow
+
+`Browser → Vercel Next.js UI → Railway FastAPI → CSV parser / validator → Railway Volume + PostgreSQL → JSON response → Next.js result UI`
+
+Do not send uploaded CSV content to a third-party analytics service.
+
+---
+
+## 12. API Requirements
+
+Base URL is configured through an environment variable in the frontend. Do not hard-code deployment URLs in source files.
+
+### 12.1 Health check
+
+`GET /health`
+
+Purpose: deployment and availability check.
+
+Example response:
+
+```json
+{
+  "status": "ok"
+}
+```
+
+### 12.2 Upload and validate dataset
+
+`POST /api/v1/datasets`
+
+Content type: `multipart/form-data`  
+Form field: `file`
+
+Backend responsibilities:
+
+1. Receive the file using FastAPI `UploadFile`.
+2. Check extension and configured file size.
+3. Read and parse CSV safely.
+4. Validate basic structure.
+5. Calculate row count, column count, missing values, duplicate rows, and preview.
+6. Store the original file under a generated UUID-based filename in private persistent storage.
+7. Save upload metadata in PostgreSQL.
+8. Return a JSON response.
+
+Example success response (illustrative only):
+
+```json
+{
+  "success": true,
+  "message": "Dataset uploaded and validated successfully",
+  "data": {
+    "dataset_id": "generated-uuid",
+    "filename": "molecular_dataset.csv",
+    "file_size_bytes": 24500,
+    "total_rows": 1000,
+    "total_columns": 5,
+    "columns": ["compound_id", "feature_a", "feature_b", "feature_c", "activity"],
+    "missing_values_total": 12,
+    "missing_values_by_column": {
+      "feature_a": 2,
+      "feature_b": 10
+    },
+    "duplicate_rows": 3,
+    "validation_status": "valid_with_warnings",
+    "warnings": ["Missing values detected", "Duplicate rows detected"],
+    "preview": [
+      {"compound_id": "CMP001", "feature_a": 1.2, "feature_b": 0.3},
+      {"compound_id": "CMP002", "feature_a": 1.4, "feature_b": 0.5}
+    ],
+    "uploaded_at": "2026-10-30T10:00:00+07:00"
+  }
+}
+```
+
+The example column names and values are illustrative. The implementation must return the actual column names and values from the uploaded CSV. Preview serialization must safely handle nulls and common scalar types.
+
+### 12.3 Retrieve dataset metadata
+
+`GET /api/v1/datasets/{dataset_id}`
+
+Purpose: retrieve upload metadata by opaque dataset ID if the result page needs to reload.
+
+### 12.4 Retrieve data preview
+
+`GET /api/v1/datasets/{dataset_id}/preview`
+
+Purpose: retrieve the first 10 rows. Do not return the full original dataset by default.
+
+### 12.5 API error format
+
+Use a consistent error response, for example:
+
+```json
+{
+  "success": false,
+  "message": "The uploaded file is not a valid CSV file.",
+  "errors": ["Unable to parse the file using the supported CSV format."]
+}
+```
+
+Return appropriate HTTP status codes such as 400/413/422 for client-side file problems and 500 for unexpected server failures. Do not expose stack traces, filesystem paths, or secrets.
+
+---
+
+## 13. Data Model (Prototype)
+
+Suggested PostgreSQL table: `dataset_uploads`.
+
+| Field | Suggested type | Description |
+|---|---|---|
+| id | UUID | Opaque dataset identifier |
+| original_filename | VARCHAR | Sanitized original filename for display |
+| stored_filename | VARCHAR | Generated UUID-based name on disk |
+| storage_path | TEXT | Internal private path; never return to browser |
+| file_size_bytes | BIGINT | Original file size |
+| total_rows | BIGINT | Parsed data row count |
+| total_columns | INTEGER | Parsed column count |
+| columns | JSONB | Actual column names |
+| missing_values_total | BIGINT | Total null/missing cells |
+| missing_values_by_column | JSONB | Missing count by column |
+| duplicate_rows | BIGINT | Duplicate rows count |
+| validation_status | VARCHAR | valid / valid_with_warnings / rejected |
+| warnings | JSONB | Warning messages |
+| created_at | TIMESTAMPTZ | Upload time |
+| expires_at | TIMESTAMPTZ, nullable | Retention expiry if cleanup is enabled |
+
+There is no user table or account relationship in v1.0.
+
+---
+
+## 14. Security, Privacy, and Reliability
+
+Because the prototype has no authentication, apply conservative handling of uploaded files.
+
+- Do not expose the storage directory as a public static directory.
+- Generate a random UUID filename for every stored upload; do not use the user's filename as the storage path.
+- Sanitize the original filename before displaying or logging it.
+- Enforce file-size limits on the backend, even if the frontend checks them first.
+- Do not trust MIME type alone; verify the file can actually be parsed as CSV.
+- Do not execute spreadsheet formulas or treat CSV cell values as HTML.
+- Escape cell values when rendering the preview table.
+- Use a rate limit or simple per-IP upload throttle suitable for the prototype.
+- Limit preview rows and avoid returning the entire CSV in API responses.
+- Keep database credentials and other secrets only in Railway environment variables.
+- Restrict CORS to approved origins.
+- Do not allow arbitrary file downloads from the volume.
+- Log operational errors without logging full dataset contents.
+- Display a notice advising users not to upload confidential or sensitive datasets in this unauthenticated prototype.
+- Define a configurable retention policy. Recommended public-demo default: delete uploaded files and their metadata after 24 hours unless the team chooses a different policy. Ensure the cleanup mechanism is actually implemented before claiming automatic deletion.
+
+A UUID is an opaque identifier, not a substitute for authentication. Do not describe the prototype as providing account-level privacy or private user workspaces.
+
+---
+
+## 15. UX and Visual Design Direction
+
+### 15.1 Overall style
+
+- Modern scientific SaaS interface.
+- Clean, minimal, professional, and trustworthy.
+- White or very light gray page backgrounds.
+- Deep navy for headings and key text.
+- Blue or cyan for primary actions and selected navigation.
+- Green for successful upload/validation.
+- Amber for warnings.
+- Red for errors.
+- Soft borders, subtle shadows, medium corner radius, and generous whitespace.
+- Use a subtle molecule / connected-node illustration in the hero only. Do not overcrowd the interface with scientific decoration.
+
+### 15.2 Typography and components
+
+- Use a clear sans-serif font.
+- Establish a consistent hierarchy for page title, section heading, body text, and helper labels.
+- Use accessible contrast and visible focus states.
+- Buttons must have clear labels and interactive states.
+- Tables should be readable, horizontally scrollable on narrow screens, and have sticky headers only if useful.
+
+### 15.3 Responsive behavior
+
+- Desktop: centered content container, two-column upload layout where useful, summary cards in a grid, full-width preview table.
+- Mobile: single-column layout, full-width upload area and buttons, horizontally scrollable data table, no clipped navigation or content.
+
+### 15.4 Visual reference files
+
+The accompanying reference images are:
+
+1. `qsar-ui-reference-board-1.png` — composite board with landing, upload, selected-file, processing, success, and error UI examples.
+2. `qsar-ui-reference-board-2.png` — product/PRD visual board with landing page, upload page, successful upload summary, and data preview examples.
+
+Use these images to understand layout, hierarchy, spacing, and visual style. They are illustrative references only. The text rendered inside AI-generated images may contain inaccuracies. **This PRD takes precedence over the mockup images.** In particular:
+
+- Do not add a “Try Now” or “Proceed to Prediction” workflow that runs a model.
+- Do not show model results, QSAR predictions, or a “ready for QSAR modeling” status.
+- Use a CTA that leads to upload only.
+- The success state means the CSV was received and structurally inspected, not that QSAR analysis was completed.
+- Do not hard-code example molecular columns as required input fields.
+
+---
+
+## 16. Non-Functional Requirements
+
+- Frontend should load quickly and avoid unnecessary animation.
+- Core flow should work on current desktop and mobile browsers.
+- API errors should be handled without crashing the page.
+- Backend should avoid loading unbounded files into memory; enforce the configured file limit and use safe parsing.
+- The frontend must not rely on hard-coded sample data for upload results.
+- API base URL, allowed origins, file-size cap, and upload storage path must be configurable through environment variables.
+- The application should have a useful README with local setup, environment variables, and deployment instructions.
+
+---
+
+## 17. Environment Configuration
+
+### Frontend (`frontend/.env.local`)
+
+```env
+NEXT_PUBLIC_API_BASE_URL=http://localhost:8000
+```
+
+For production, set the value to the Railway FastAPI public URL in Vercel project environment variables.
+
+### Backend (`backend/.env` for local development; Railway variables in production)
+
+```env
+APP_ENV=development
+ALLOWED_ORIGINS=http://localhost:3000
+MAX_UPLOAD_SIZE_MB=10
+UPLOAD_DIR=/data/uploads
+DATABASE_URL=postgresql+psycopg://...
+```
+
+Never commit real `.env` files, passwords, tokens, or production database URLs to GitHub. Provide `.env.example` with placeholder values.
+
+---
+
+## 18. Suggested Repository Structure
+
+```text
+qsar-platform/
+├── frontend/
+│   ├── app/
+│   │   ├── page.tsx
+│   │   ├── upload/page.tsx
+│   │   └── globals.css
+│   ├── components/
+│   │   ├── navbar.tsx
+│   │   ├── hero-section.tsx
+│   │   ├── upload-dropzone.tsx
+│   │   ├── selected-file.tsx
+│   │   ├── dataset-summary.tsx
+│   │   ├── validation-status.tsx
+│   │   └── data-preview-table.tsx
+│   ├── lib/api.ts
+│   ├── public/
+│   └── package.json
+│
+├── backend/
+│   ├── app/
+│   │   ├── main.py
+│   │   ├── api/datasets.py
+│   │   ├── schemas/dataset.py
+│   │   ├── services/csv_reader.py
+│   │   ├── services/csv_validator.py
+│   │   ├── services/file_storage.py
+│   │   └── database/
+│   │       ├── connection.py
+│   │       └── models.py
+│   ├── tests/
+│   ├── requirements.txt
+│   └── Dockerfile
+│
+├── docs/
+│   ├── qsar-ui-reference-board-1.png
+│   └── qsar-ui-reference-board-2.png
+│
+├── .gitignore
+└── README.md
+```
+
+The implementation may adjust the internal structure while preserving the responsibilities and API contract defined in this PRD.
+
+---
+
+## 19. Acceptance Test Checklist
+
+### Frontend
+
+- [ ] Home page displays product name, explanation, navigation, and Upload Dataset CTA.
+- [ ] No login, register, wallet, or payment controls are displayed.
+- [ ] Upload page supports file picker.
+- [ ] Drag-and-drop selects a CSV file.
+- [ ] Non-CSV file receives a clear error.
+- [ ] Oversized file receives a clear error.
+- [ ] Selected file name and size are displayed.
+- [ ] User can remove or replace a selected file.
+- [ ] Upload button is disabled during submission.
+- [ ] Loading state is visible during the backend request.
+- [ ] Successful API response populates the real summary and preview.
+- [ ] Error response is shown clearly and user can retry.
+- [ ] Layout is usable on desktop and mobile.
+
+### Backend
+
+- [ ] `GET /health` returns a healthy response.
+- [ ] `POST /api/v1/datasets` accepts a valid CSV multipart upload.
+- [ ] Backend rejects an empty or malformed CSV.
+- [ ] Backend rejects unsupported extensions and files over the configured limit.
+- [ ] Backend detects a missing/invalid header.
+- [ ] Backend returns the actual row count and column count.
+- [ ] Backend returns actual column names.
+- [ ] Backend calculates missing values and duplicate rows.
+- [ ] Backend returns at most 10 preview rows.
+- [ ] Original file is stored outside the public web root with a generated filename.
+- [ ] Upload metadata is stored in PostgreSQL if persistence is enabled.
+- [ ] Internal storage paths and stack traces are never returned to the client.
+- [ ] CORS allows the configured frontend origin.
+
+### Product scope
+
+- [ ] No QSAR model is loaded or executed.
+- [ ] No false prediction or analysis result is displayed.
+- [ ] The UI clearly states that model analysis is not available in this prototype.
+
+---
+
+## 20. Future Roadmap (Not Part of v1.0)
+
+### Phase 2 — QSAR model integration
+
+- Finalize the model input schema.
+- Decide whether the model accepts SMILES, molecular descriptors, or another representation.
+- Implement model-specific preprocessing and validation.
+- Package the trained preprocessing/model pipeline and load it in the Python backend.
+- Add asynchronous job execution for longer-running analyses.
+- Display real prediction or evaluation results with suitable scientific context.
+
+### Phase 3 — User accounts and payment
+
+- Email registration and login.
+- User profile and account settings.
+- Credit/coin ledger and balance.
+- DOKU QRIS checkout and verified payment callbacks.
+- Credit deduction only after a valid analysis request.
+- Dataset and analysis history.
+- Account-level authorization and access controls.
+
+These future phases require their own detailed PRDs and security review before implementation.
+
+---
+
+## 21. Instructions for the AI Website Builder
+
+Build the application described in this PRD. Treat this document as the source of truth.
+
+1. Create a working Next.js + TypeScript frontend in `/frontend` and a Python FastAPI backend in `/backend`.
+2. Implement the real CSV upload connection from the frontend to the Railway-compatible API. Do not make the upload interaction a visual-only mockup.
+3. Use Pandas in the backend to read and inspect the actual uploaded CSV.
+4. Return the actual backend summary and preview to the frontend.
+5. Keep the CSV schema generic. Do not require SMILES or molecular descriptor fields in this version.
+6. Do not implement authentication, payments, credits, QSAR inference, or fake analysis results.
+7. Use the accompanying images only as visual guidance. Follow the written PRD whenever an image label conflicts with the scope.
+8. Include `.env.example`, a useful `README.md`, error handling, and basic tests.
+9. Make all visible buttons functional. Remove any button that does not have a defined action.
+10. Before considering the work complete, test the full upload journey against a running FastAPI backend using both a valid CSV and an invalid CSV.
+
+**Definition of done:** a visitor can upload a real CSV through the deployed website, the Railway backend reads and validates it, and the website displays the actual dataset summary and preview. Nothing beyond this scope is required for Prototype v1.0.

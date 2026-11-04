@@ -1,0 +1,6 @@
+{
+  "name": "QSAR Platform - Molecular Dataset Validator",
+  "description": "Platform prototipe untuk mengunggah, memvalidasi struktur, dan melihat pratinjau dataset molekuler untuk analisis QSAR.",
+  "requestFramePermissions": [],
+  "majorCapabilities": ["MAJOR_CAPABILITY_SERVER_SIDE_GEMINI_API"]
+}
