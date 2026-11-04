@@ -6,55 +6,21 @@
 import React, { useState } from 'react';
 import { Navbar, AppView } from './components/Navbar';
 import { HeroSection } from './components/HeroSection';
-import { UploadSection } from './components/UploadSection';
-import { ProcessingState } from './components/ProcessingState';
-import { ValidationResultSuccess } from './components/ValidationResultSuccess';
-import { ValidationResultError } from './components/ValidationResultError';
 import { HowItWorksSection } from './components/HowItWorksSection';
 import { AboutSection } from './components/AboutSection';
 import { Footer } from './components/Footer';
 import { TrainModelPage } from './components/TrainModel/TrainModelPage';
 import { PredictCompoundsPage } from './components/PredictCompounds/PredictCompoundsPage';
-import { ModelLibraryPage } from './components/ModelLibrary/ModelLibraryPage';
 import { DocumentationPage } from './components/Documentation/DocumentationPage';
-import { DatasetSummary } from './types/dataset';
-import { uploadDatasetFile } from './lib/api';
+import { TrainingJobResult } from './types/dataset';
 import { useLanguage } from './context/LanguageContext';
+import { Brain, Play, ArrowRight, ShieldCheck, Zap } from 'lucide-react';
 
 export default function App() {
-  const { t } = useLanguage();
+  const { t, language } = useLanguage();
+  const isId = language === 'id';
   const [currentView, setCurrentView] = useState<AppView>('home');
-  const [selectedModelId, setSelectedModelId] = useState<string | undefined>(undefined);
-
-  // Upload/validation state for legacy dataset validator
-  const [uploadState, setUploadState] = useState<'idle' | 'processing' | 'success' | 'error'>('idle');
-  const [selectedFileName, setSelectedFileName] = useState<string>('');
-  const [datasetResult, setDatasetResult] = useState<DatasetSummary | null>(null);
-  const [errorMessage, setErrorMessage] = useState<string>('');
-  const [errorList, setErrorList] = useState<string[]>([]);
-
-  const handleUpload = async (file: File) => {
-    setSelectedFileName(file.name);
-    setUploadState('processing');
-
-    const result = await uploadDatasetFile(file);
-
-    if (result.success) {
-      setDatasetResult(result.data);
-      setUploadState('success');
-    } else {
-      setErrorMessage(result.message);
-      setErrorList(result.errors || ['Terjadi kesalahan saat memvalidasi berkas CSV / Excel.']);
-      setUploadState('error');
-    }
-  };
-
-  const handleReset = () => {
-    setUploadState('idle');
-    setDatasetResult(null);
-    setErrorMessage('');
-    setErrorList([]);
-  };
+  const [activeModel, setActiveModel] = useState<TrainingJobResult | null>(null);
 
   const handleScrollToSection = (sectionId: string) => {
     const el = document.getElementById(sectionId);
@@ -68,8 +34,8 @@ export default function App() {
     window.scrollTo({ top: 0, behavior: 'smooth' });
   };
 
-  const handleUseModelForPrediction = (modelId: string) => {
-    setSelectedModelId(modelId);
+  const handleProceedToPredict = (trainedModel: TrainingJobResult) => {
+    setActiveModel(trainedModel);
     setCurrentView('predict');
     window.scrollTo({ top: 0, behavior: 'smooth' });
   };
@@ -87,56 +53,98 @@ export default function App() {
         {currentView === 'home' && (
           <>
             <HeroSection
-              onStartUpload={() => navigateTo('upload')}
+              onStartUpload={() => navigateTo('train')}
               onTrainModel={() => navigateTo('train')}
               onPredictCompounds={() => navigateTo('predict')}
               onLearnMore={() => handleScrollToSection('how-it-works')}
             />
 
-            {/* Embedded Quick Upload CTA Section on Home */}
-            <div className="bg-slate-100/60 py-12 border-t border-slate-200">
-              <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
-                <div className="mb-6 flex flex-col sm:flex-row sm:items-center justify-between gap-4">
-                  <div>
-                    <h2 className="text-2xl font-bold tracking-tight text-slate-900">
-                      {t.hero.ctaTryUpload}
-                    </h2>
-                    <p className="text-sm text-slate-600 mt-1">
-                      {t.hero.ctaTryUploadDesc}
-                    </p>
+            {/* 2-Step In-Session Workflow Overview replacing the old upload validator */}
+            <div className="bg-slate-100/70 py-14 border-t border-slate-200">
+              <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 space-y-8">
+                <div className="text-center max-w-2xl mx-auto space-y-2">
+                  <span className="text-xs font-semibold tracking-wider uppercase text-blue-600 font-mono">
+                    ALUR KERJA TANPA STORAGE (IN-SESSION)
+                  </span>
+                  <h2 className="text-2xl sm:text-3xl font-extrabold tracking-tight text-slate-900">
+                    {isId ? 'Latih Model Baru & Prediksi Secara Instan' : 'Train & Predict Directly In-Session'}
+                  </h2>
+                  <p className="text-sm text-slate-600">
+                    {isId
+                      ? 'Untuk efisiensi dan menghindari pemakaian persistent cloud storage, platform ini beroperasi secara in-session: latih model QSAR Anda terlebih dahulu, lalu langsung uji senyawa tanaman Anda.'
+                      : 'Operating in-session eliminates cloud storage limits: train your custom QSAR model first, then immediately predict plant compounds.'}
+                  </p>
+                </div>
+
+                <div className="grid grid-cols-1 md:grid-cols-2 gap-6 max-w-4xl mx-auto">
+                  {/* Step 1: Latih Model */}
+                  <div className="bg-white rounded-2xl border border-slate-200 p-6 shadow-xs flex flex-col justify-between space-y-5 hover:border-blue-300 transition-all">
+                    <div className="space-y-3">
+                      <div className="w-12 h-12 rounded-xl bg-blue-50 text-blue-600 flex items-center justify-center font-extrabold text-lg">
+                        1
+                      </div>
+                      <h3 className="text-lg font-bold text-slate-900">
+                        {isId ? 'Langkah 1: Latih Model QSAR' : 'Step 1: Train QSAR Model'}
+                      </h3>
+                      <p className="text-xs text-slate-600 leading-relaxed">
+                        {isId
+                          ? 'Unggah dataset bioaktivitas target Anda (SMILES & nilai aktivitas). Sistem melakukan standarisasi RDKit, scaffold splitting, dan benchmark 5 algoritma regresi (Random Forest, Extra Trees, SVR, MLP).'
+                          : 'Upload target bioactivity dataset. System standardizes molecules with RDKit, executes scaffold split, and benchmarks regression algorithms.'}
+                      </p>
+                    </div>
+
+                    <button
+                      type="button"
+                      onClick={() => navigateTo('train')}
+                      className="inline-flex items-center justify-center gap-2 px-5 py-3 rounded-xl bg-blue-600 text-white font-semibold text-xs hover:bg-blue-700 transition-all shadow-xs cursor-pointer"
+                    >
+                      <Brain className="w-4 h-4" />
+                      <span>{isId ? 'Mulai Latih Model' : 'Start Training Model'}</span>
+                      <ArrowRight className="w-4 h-4" />
+                    </button>
+                  </div>
+
+                  {/* Step 2: Prediksi Senyawa */}
+                  <div className="bg-white rounded-2xl border border-slate-200 p-6 shadow-xs flex flex-col justify-between space-y-5 hover:border-emerald-300 transition-all">
+                    <div className="space-y-3">
+                      <div className="w-12 h-12 rounded-xl bg-emerald-50 text-emerald-600 flex items-center justify-center font-extrabold text-lg">
+                        2
+                      </div>
+                      <h3 className="text-lg font-bold text-slate-900">
+                        {isId ? 'Langkah 2: Prediksi Senyawa Tanaman' : 'Step 2: Predict Plant Compounds'}
+                      </h3>
+                      <p className="text-xs text-slate-600 leading-relaxed">
+                        {isId
+                          ? 'Setelah model selesai dilatih, langsung unggah file CSV senyawa herbal Anda (ID & Smiles) untuk mengestimasi pIC50, IC50 (nM), dan status batas ruang kimiawi (Applicability Domain).'
+                          : 'Once trained, immediately upload plant compound CSV (ID & Smiles) to predict pIC50, IC50 (nM), and chemical Applicability Domain.'}
+                      </p>
+                    </div>
+
+                    <button
+                      type="button"
+                      onClick={() => navigateTo('predict')}
+                      className="inline-flex items-center justify-center gap-2 px-5 py-3 rounded-xl bg-emerald-600 text-white font-semibold text-xs hover:bg-emerald-700 transition-all shadow-xs cursor-pointer"
+                    >
+                      <Play className="w-4 h-4 fill-current" />
+                      <span>{isId ? 'Prediksi Senyawa' : 'Predict Compounds'}</span>
+                      <ArrowRight className="w-4 h-4" />
+                    </button>
                   </div>
                 </div>
 
-                {uploadState === 'idle' && (
-                  <UploadSection
-                    onUploadFile={handleUpload}
-                    isLoading={false}
-                  />
-                )}
-
-                {uploadState === 'processing' && (
-                  <ProcessingState fileName={selectedFileName} />
-                )}
-
-                {uploadState === 'success' && datasetResult && (
-                  <ValidationResultSuccess
-                    dataset={datasetResult}
-                    onReset={handleReset}
-                  />
-                )}
-
-                {uploadState === 'error' && (
-                  <ValidationResultError
-                    message={errorMessage}
-                    errors={errorList}
-                    fileName={selectedFileName}
-                    onRetry={handleReset}
-                  />
-                )}
+                {/* Zero storage note */}
+                <div className="max-w-4xl mx-auto p-4 rounded-xl bg-blue-50 border border-blue-200 text-blue-900 text-xs flex items-center gap-3">
+                  <ShieldCheck className="w-5 h-5 text-blue-600 shrink-0" />
+                  <span>
+                    {isId
+                      ? 'Privasi & Bebas Biaya Storage: Seluruh model hasil pelatihan berada di memori sesi aktif dan tidak disimpan ke server penyimpanan permanen.'
+                      : 'Privacy & Zero Persistent Storage: Models are computed in active session memory and discarded upon refresh, eliminating storage costs.'}
+                  </span>
+                </div>
               </div>
             </div>
 
-            <HowItWorksSection onStartUpload={() => navigateTo('upload')} />
+            <HowItWorksSection onStartUpload={() => navigateTo('train')} />
             <AboutSection />
           </>
         )}
@@ -144,72 +152,27 @@ export default function App() {
         {/* VIEW 2: TRAIN MODEL (FEATURE 1) */}
         {currentView === 'train' && (
           <TrainModelPage
-            onNavigateToPredict={(modelId) => {
-              if (modelId) setSelectedModelId(modelId);
-              navigateTo('predict');
-            }}
-            onNavigateToModels={() => navigateTo('models')}
+            onProceedToPredict={handleProceedToPredict}
           />
         )}
 
         {/* VIEW 3: PREDICT COMPOUNDS (FEATURE 2) */}
         {currentView === 'predict' && (
           <PredictCompoundsPage
-            initialModelId={selectedModelId}
-            onNavigateToTrain={() => navigateTo('train')}
-            onNavigateToModels={() => navigateTo('models')}
-          />
-        )}
-
-        {/* VIEW 4: MODEL LIBRARY */}
-        {currentView === 'models' && (
-          <ModelLibraryPage
-            onUseForPrediction={handleUseModelForPrediction}
+            activeModel={activeModel}
             onNavigateToTrain={() => navigateTo('train')}
           />
         )}
 
-        {/* VIEW 5: DOCUMENTATION */}
+        {/* VIEW 4: DOCUMENTATION */}
         {currentView === 'docs' && (
           <DocumentationPage />
         )}
 
-        {/* VIEW 6: ABOUT */}
+        {/* VIEW 5: ABOUT */}
         {currentView === 'about' && (
           <div className="py-8">
             <AboutSection />
-          </div>
-        )}
-
-        {/* VIEW 7: DATASET VALIDATOR (LEGACY UPLOAD) */}
-        {currentView === 'upload' && (
-          <div className="py-8">
-            {uploadState === 'idle' && (
-              <UploadSection
-                onUploadFile={handleUpload}
-                isLoading={false}
-              />
-            )}
-
-            {uploadState === 'processing' && (
-              <ProcessingState fileName={selectedFileName} />
-            )}
-
-            {uploadState === 'success' && datasetResult && (
-              <ValidationResultSuccess
-                dataset={datasetResult}
-                onReset={handleReset}
-              />
-            )}
-
-            {uploadState === 'error' && (
-              <ValidationResultError
-                message={errorMessage}
-                errors={errorList}
-                fileName={selectedFileName}
-                onRetry={handleReset}
-              />
-            )}
           </div>
         )}
       </main>

@@ -1,9 +1,9 @@
 import React, { useState } from 'react';
-import { Sparkles, Brain, Database, BookOpen, Info, CheckCircle2, Menu, X, Play } from 'lucide-react';
+import { Brain, Play, BookOpen, Info, Menu, X } from 'lucide-react';
 import { useLanguage } from '../context/LanguageContext';
 import { LanguageSwitcher } from './LanguageSwitcher';
 
-export type AppView = 'home' | 'train' | 'predict' | 'models' | 'docs' | 'about' | 'upload';
+export type AppView = 'home' | 'train' | 'predict' | 'docs' | 'about';
 
 interface NavbarProps {
   currentView: AppView;
@@ -23,13 +23,12 @@ export const Navbar: React.FC<NavbarProps> = ({ currentView, onNavigate, onScrol
     }
   };
 
-  const navLinks: { id: AppView; label: string; icon?: React.ReactNode }[] = [
+  const navLinks: { id: AppView; label: string }[] = [
     { id: 'home', label: t.nav.home },
-    { id: 'train', label: t.nav.trainModel || 'Train Model' },
-    { id: 'predict', label: t.nav.predictCompounds || 'Predict Compounds' },
-    { id: 'models', label: t.nav.modelLibrary || 'Model Library' },
-    { id: 'docs', label: t.nav.documentation || 'Documentation' },
-    { id: 'about', label: t.nav.about || 'About' },
+    { id: 'train', label: t.nav.trainModel || 'Latih Model' },
+    { id: 'predict', label: t.nav.predictCompounds || 'Prediksi Senyawa' },
+    { id: 'docs', label: t.nav.documentation || 'Dokumentasi' },
+    { id: 'about', label: t.nav.about || 'Tentang' },
   ];
 
   return (
@@ -70,14 +69,14 @@ export const Navbar: React.FC<NavbarProps> = ({ currentView, onNavigate, onScrol
         </button>
 
         {/* Desktop Nav Links */}
-        <nav className="hidden lg:flex items-center gap-1 xl:gap-2 text-sm font-medium text-slate-600">
+        <nav className="hidden md:flex items-center gap-1 lg:gap-2 text-sm font-medium text-slate-600">
           {navLinks.map((link) => {
             const isActive = currentView === link.id;
             return (
               <button
                 key={link.id}
                 onClick={() => handleNavClick(link.id)}
-                className={`px-3 py-1.5 rounded-lg transition-all whitespace-nowrap cursor-pointer text-xs xl:text-sm ${
+                className={`px-3 py-1.5 rounded-lg transition-all whitespace-nowrap cursor-pointer text-xs lg:text-sm ${
                   isActive
                     ? 'bg-blue-50 text-blue-700 font-semibold shadow-xs'
                     : 'hover:text-blue-600 hover:bg-slate-50'
@@ -87,38 +86,26 @@ export const Navbar: React.FC<NavbarProps> = ({ currentView, onNavigate, onScrol
               </button>
             );
           })}
-
-          {/* Quick link to legacy dataset validation */}
-          <button
-            onClick={() => handleNavClick('upload')}
-            className={`px-2.5 py-1.5 rounded-lg transition-all text-xs text-slate-500 hover:text-slate-800 hover:bg-slate-50 whitespace-nowrap cursor-pointer ${
-              currentView === 'upload' ? 'bg-slate-100 text-slate-900 font-medium' : ''
-            }`}
-            title="Validator Format CSV/Excel"
-          >
-            {t.nav.upload || 'Dataset Validator'}
-          </button>
         </nav>
 
         {/* Right Actions */}
         <div className="flex items-center gap-2 sm:gap-3 shrink-0">
           <LanguageSwitcher />
 
-          {/* Predict Compounds Action Button */}
+          {/* Primary Action Button */}
           <button
-            onClick={() => handleNavClick('predict')}
-            className="inline-flex items-center gap-1.5 px-3 sm:px-3.5 py-2 text-xs sm:text-sm font-semibold text-white bg-blue-600 rounded-lg hover:bg-blue-700 active:bg-blue-800 transition-all shadow-xs whitespace-nowrap cursor-pointer"
+            onClick={() => handleNavClick('train')}
+            className="inline-flex items-center gap-1.5 px-3.5 py-2 text-xs sm:text-sm font-semibold text-white bg-blue-600 rounded-lg hover:bg-blue-700 active:bg-blue-800 transition-all shadow-xs whitespace-nowrap cursor-pointer"
           >
-            <Play className="w-3.5 h-3.5 fill-current" />
-            <span className="hidden sm:inline">{t.nav.predictCompounds || 'Predict Compounds'}</span>
-            <span className="sm:hidden">Prediksi</span>
+            <Brain className="w-3.5 h-3.5" />
+            <span>{t.nav.trainModel || 'Latih Model'}</span>
           </button>
 
           {/* Mobile Hamburger Toggle Button */}
           <button
             type="button"
             onClick={() => setMobileMenuOpen((prev) => !prev)}
-            className="lg:hidden p-2 rounded-lg text-slate-600 hover:text-slate-900 hover:bg-slate-100 transition-colors focus:outline-none cursor-pointer"
+            className="md:hidden p-2 rounded-lg text-slate-600 hover:text-slate-900 hover:bg-slate-100 transition-colors focus:outline-none cursor-pointer"
             aria-label="Toggle mobile menu"
           >
             {mobileMenuOpen ? <X className="w-5 h-5" /> : <Menu className="w-5 h-5" />}
@@ -128,7 +115,7 @@ export const Navbar: React.FC<NavbarProps> = ({ currentView, onNavigate, onScrol
 
       {/* Mobile Drawer Dropdown */}
       {mobileMenuOpen && (
-        <div className="lg:hidden border-t border-slate-200 bg-white px-4 pt-3 pb-5 space-y-1.5 shadow-xl animate-in slide-in-from-top-2 duration-150">
+        <div className="md:hidden border-t border-slate-200 bg-white px-4 pt-3 pb-5 space-y-1.5 shadow-xl animate-in slide-in-from-top-2 duration-150">
           {navLinks.map((link) => {
             const isActive = currentView === link.id;
             return (
@@ -146,16 +133,6 @@ export const Navbar: React.FC<NavbarProps> = ({ currentView, onNavigate, onScrol
               </button>
             );
           })}
-          <div className="pt-2 border-t border-slate-100">
-            <button
-              onClick={() => handleNavClick('upload')}
-              className={`w-full text-left px-3 py-2 rounded-lg text-xs transition-colors text-slate-500 hover:bg-slate-50 ${
-                currentView === 'upload' ? 'bg-slate-100 text-slate-900 font-medium' : ''
-              }`}
-            >
-              📊 {t.nav.upload || 'Dataset Validator (CSV/Excel)'}
-            </button>
-          </div>
         </div>
       )}
     </header>

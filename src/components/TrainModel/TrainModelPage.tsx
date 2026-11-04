@@ -34,13 +34,11 @@ import {
 import { useLanguage } from '../../context/LanguageContext';
 
 interface TrainModelPageProps {
-  onNavigateToPredict?: (modelId?: string) => void;
-  onNavigateToModels?: () => void;
+  onProceedToPredict: (trainedModel: TrainingJobResult) => void;
 }
 
 export const TrainModelPage: React.FC<TrainModelPageProps> = ({
-  onNavigateToPredict,
-  onNavigateToModels
+  onProceedToPredict
 }) => {
   const { language } = useLanguage();
   const isId = language === 'id';
@@ -1038,78 +1036,36 @@ IDH1_015,CCOC(=O)C1=CC=C(C=C1)CNC(=O)C2=C(C(=O)N(C2=O)CC3=CC=CC=C3)C,1150.0,IDH1
             </div>
           </div>
 
-          {/* STEP 7: SAVE MODEL ACTION CARD */}
-          <div className="bg-white rounded-xl border border-blue-200 p-6 shadow-sm space-y-4">
-            <div className="flex items-start justify-between">
+          {/* STEP 7: PROCEED TO PREDICTION */}
+          <div className="bg-gradient-to-r from-blue-600 to-indigo-600 rounded-xl p-6 text-white shadow-md space-y-4">
+            <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-4">
               <div>
-                <h3 className="text-base font-bold text-slate-900 flex items-center gap-2">
-                  <Bookmark className="w-5 h-5 text-blue-600" />
-                  <span>{isId ? 'Langkah 7: Simpan Model ke Model Library' : 'Step 7: Persist Model to Library'}</span>
+                <div className="inline-flex items-center gap-1.5 px-3 py-0.5 rounded-full bg-white/20 text-white text-xs font-semibold mb-2">
+                  <Play className="w-3.5 h-3.5 fill-current" />
+                  <span>{isId ? 'Langkah 7: Model Siap Digunakan' : 'Step 7: Ready for Compound Prediction'}</span>
+                </div>
+                <h3 className="text-xl font-bold">
+                  {isId ? 'Gunakan Model Ini untuk Prediksi Senyawa Tanaman' : 'Use This Model to Predict Plant Compounds'}
                 </h3>
-                <p className="text-xs text-slate-500">
+                <p className="text-xs text-blue-100 mt-1 max-w-2xl">
                   {isId
-                    ? 'Model akan dikemas dalam format .joblib mandiri bersama sidik jari referensi Tanimoto untuk inferensi senyawa tanaman.'
-                    : 'The model package (.joblib) will be saved to persistent storage alongside training fingerprints for applicability domain checking.'}
+                    ? 'Model hasil pelatihan ini aktif dalam memori sesi Anda. Anda dapat langsung mengunggah file CSV senyawa herbal dan memprediksi bioaktivitasnya tanpa perlu menyimpan ke database storage.'
+                    : 'The trained model is active in your current session memory. You can directly upload herbal compounds CSV and compute predictions without consuming persistent storage.'}
                 </p>
               </div>
+
+              {onProceedToPredict && (
+                <button
+                  type="button"
+                  onClick={() => onProceedToPredict(jobResults)}
+                  className="inline-flex items-center gap-2 px-6 py-3 rounded-xl bg-white text-blue-700 font-bold text-sm hover:bg-blue-50 transition-all shadow-md shrink-0 cursor-pointer"
+                >
+                  <Play className="w-4 h-4 fill-current" />
+                  <span>{isId ? 'Lanjut ke Prediksi Senyawa' : 'Proceed to Predict Compounds'}</span>
+                  <ArrowRight className="w-4 h-4" />
+                </button>
+              )}
             </div>
-
-            <div className="flex flex-col sm:flex-row gap-3 pt-2">
-              <input
-                type="text"
-                value={modelDisplayName}
-                onChange={(e) => setModelDisplayName(e.target.value)}
-                placeholder="Nama Model QSAR"
-                className="flex-1 px-3.5 py-2 text-sm border border-slate-300 rounded-lg focus:ring-2 focus:ring-blue-500 font-medium"
-              />
-              <button
-                type="button"
-                onClick={handleSaveModel}
-                disabled={isSavingModel || Boolean(savedModelSuccess)}
-                className="px-6 py-2.5 rounded-lg bg-blue-600 text-white font-semibold text-xs sm:text-sm hover:bg-blue-700 transition-all shadow-sm cursor-pointer disabled:opacity-50 flex items-center justify-center gap-2"
-              >
-                {isSavingModel ? (
-                  <div className="w-4 h-4 border-2 border-white border-t-transparent rounded-full animate-spin" />
-                ) : (
-                  <Bookmark className="w-4 h-4" />
-                )}
-                <span>{savedModelSuccess ? (isId ? 'Tersimpan ✓' : 'Saved ✓') : (isId ? 'Simpan Model' : 'Save Model')}</span>
-              </button>
-            </div>
-
-            {savedModelSuccess && (
-              <div className="p-4 rounded-lg bg-emerald-50 border border-emerald-200 text-emerald-950 flex flex-col sm:flex-row sm:items-center justify-between gap-3 text-xs">
-                <div>
-                  <strong className="block font-bold text-emerald-800">
-                    Model berhasil disimpan ke Model Library!
-                  </strong>
-                  <span className="text-emerald-700">
-                    Model ID: <code className="bg-emerald-100 px-1.5 py-0.5 rounded font-mono">{savedModelSuccess.model_id}</code>
-                  </span>
-                </div>
-
-                <div className="flex gap-2">
-                  {onNavigateToPredict && (
-                    <button
-                      type="button"
-                      onClick={() => onNavigateToPredict(savedModelSuccess.model_id)}
-                      className="px-3.5 py-1.5 rounded-md bg-emerald-600 text-white font-semibold hover:bg-emerald-700 transition-colors cursor-pointer"
-                    >
-                      {isId ? 'Gunakan untuk Prediksi' : 'Predict Compounds'}
-                    </button>
-                  )}
-                  {onNavigateToModels && (
-                    <button
-                      type="button"
-                      onClick={onNavigateToModels}
-                      className="px-3.5 py-1.5 rounded-md border border-emerald-300 text-emerald-800 font-semibold hover:bg-emerald-100 transition-colors cursor-pointer"
-                    >
-                      {isId ? 'Buka Model Library' : 'Open Model Library'}
-                    </button>
-                  )}
-                </div>
-              </div>
-            )}
           </div>
 
           <div className="flex justify-between pt-4">
