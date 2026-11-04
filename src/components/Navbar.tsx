@@ -1,35 +1,46 @@
 import React, { useState } from 'react';
-import { Upload, Menu, X } from 'lucide-react';
+import { Sparkles, Brain, Database, BookOpen, Info, CheckCircle2, Menu, X, Play } from 'lucide-react';
 import { useLanguage } from '../context/LanguageContext';
 import { LanguageSwitcher } from './LanguageSwitcher';
 
+export type AppView = 'home' | 'train' | 'predict' | 'models' | 'docs' | 'about' | 'upload';
+
 interface NavbarProps {
-  currentView: 'home' | 'upload';
-  onNavigate: (view: 'home' | 'upload') => void;
-  onScrollToSection: (sectionId: string) => void;
+  currentView: AppView;
+  onNavigate: (view: AppView) => void;
+  onScrollToSection?: (sectionId: string) => void;
 }
 
 export const Navbar: React.FC<NavbarProps> = ({ currentView, onNavigate, onScrollToSection }) => {
   const { t } = useLanguage();
   const [mobileMenuOpen, setMobileMenuOpen] = useState(false);
 
-  const handleNavClick = (view: 'home' | 'upload', sectionId?: string) => {
+  const handleNavClick = (view: AppView, sectionId?: string) => {
     setMobileMenuOpen(false);
     onNavigate(view);
-    if (sectionId) {
+    if (sectionId && onScrollToSection) {
       setTimeout(() => onScrollToSection(sectionId), 60);
     }
   };
 
+  const navLinks: { id: AppView; label: string; icon?: React.ReactNode }[] = [
+    { id: 'home', label: t.nav.home },
+    { id: 'train', label: t.nav.trainModel || 'Train Model' },
+    { id: 'predict', label: t.nav.predictCompounds || 'Predict Compounds' },
+    { id: 'models', label: t.nav.modelLibrary || 'Model Library' },
+    { id: 'docs', label: t.nav.documentation || 'Documentation' },
+    { id: 'about', label: t.nav.about || 'About' },
+  ];
+
   return (
-    <header className="sticky top-0 z-40 bg-white/95 backdrop-blur-md border-b border-slate-200">
-      <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 h-16 flex items-center justify-between gap-3 sm:gap-8">
+    <header className="sticky top-0 z-40 bg-white/95 backdrop-blur-md border-b border-slate-200 shadow-xs">
+      <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 h-16 flex items-center justify-between gap-2 sm:gap-4">
         {/* Brand Zone */}
         <button
           onClick={() => handleNavClick('home')}
           className="flex items-center gap-2.5 text-left group focus:outline-none shrink-0 cursor-pointer"
         >
-          <div className="w-8 h-8 rounded-lg bg-blue-600 text-white flex items-center justify-center font-bold text-sm shadow-sm transition-transform group-hover:scale-105">
+          <div className="w-8 h-8 rounded-lg bg-gradient-to-tr from-blue-700 to-indigo-600 text-white flex items-center justify-center font-bold text-sm shadow-sm transition-transform group-hover:scale-105">
             <svg
               className="w-5 h-5 text-white"
               viewBox="0 0 24 24"
@@ -46,40 +57,46 @@ export const Navbar: React.FC<NavbarProps> = ({ currentView, onNavigate, onScrol
               <path d="m13.5 13.5 4-7" />
             </svg>
           </div>
-          <span className="text-base sm:text-lg font-bold tracking-tight text-slate-900 whitespace-nowrap">
-            {t.nav.brand}
-          </span>
+          <div className="flex flex-col">
+            <div className="flex items-center gap-1.5">
+              <span className="text-base sm:text-lg font-bold tracking-tight text-slate-900 whitespace-nowrap">
+                {t.nav.brand}
+              </span>
+              <span className="hidden sm:inline-block px-1.5 py-0.5 text-[10px] font-semibold bg-blue-100 text-blue-700 rounded-md">
+                v2.0
+              </span>
+            </div>
+          </div>
         </button>
 
         {/* Desktop Nav Links */}
-        <nav className="hidden md:flex items-center gap-6 lg:gap-7 text-sm font-medium text-slate-600">
-          <button
-            onClick={() => handleNavClick('home')}
-            className={`transition-colors whitespace-nowrap shrink-0 hover:text-blue-600 cursor-pointer ${
-              currentView === 'home' ? 'text-blue-600 font-semibold' : ''
-            }`}
-          >
-            {t.nav.home}
-          </button>
+        <nav className="hidden lg:flex items-center gap-1 xl:gap-2 text-sm font-medium text-slate-600">
+          {navLinks.map((link) => {
+            const isActive = currentView === link.id;
+            return (
+              <button
+                key={link.id}
+                onClick={() => handleNavClick(link.id)}
+                className={`px-3 py-1.5 rounded-lg transition-all whitespace-nowrap cursor-pointer text-xs xl:text-sm ${
+                  isActive
+                    ? 'bg-blue-50 text-blue-700 font-semibold shadow-xs'
+                    : 'hover:text-blue-600 hover:bg-slate-50'
+                }`}
+              >
+                {link.label}
+              </button>
+            );
+          })}
+
+          {/* Quick link to legacy dataset validation */}
           <button
             onClick={() => handleNavClick('upload')}
-            className={`transition-colors whitespace-nowrap shrink-0 hover:text-blue-600 cursor-pointer ${
-              currentView === 'upload' ? 'text-blue-600 font-semibold' : ''
+            className={`px-2.5 py-1.5 rounded-lg transition-all text-xs text-slate-500 hover:text-slate-800 hover:bg-slate-50 whitespace-nowrap cursor-pointer ${
+              currentView === 'upload' ? 'bg-slate-100 text-slate-900 font-medium' : ''
             }`}
+            title="Validator Format CSV/Excel"
           >
-            {t.nav.upload}
-          </button>
-          <button
-            onClick={() => handleNavClick('home', 'how-it-works')}
-            className="hover:text-blue-600 transition-colors whitespace-nowrap shrink-0 cursor-pointer"
-          >
-            {t.nav.howItWorks}
-          </button>
-          <button
-            onClick={() => handleNavClick('home', 'about')}
-            className="hover:text-blue-600 transition-colors whitespace-nowrap shrink-0 cursor-pointer"
-          >
-            {t.nav.about}
+            {t.nav.upload || 'Dataset Validator'}
           </button>
         </nav>
 
@@ -87,21 +104,21 @@ export const Navbar: React.FC<NavbarProps> = ({ currentView, onNavigate, onScrol
         <div className="flex items-center gap-2 sm:gap-3 shrink-0">
           <LanguageSwitcher />
 
-          {/* Primary Action Button */}
+          {/* Predict Compounds Action Button */}
           <button
-            onClick={() => handleNavClick('upload')}
-            className="inline-flex items-center gap-1.5 sm:gap-2 px-3 sm:px-4 py-2 text-xs sm:text-sm font-semibold text-white bg-blue-600 rounded-lg hover:bg-blue-700 active:bg-blue-800 transition-all shadow-sm whitespace-nowrap cursor-pointer"
+            onClick={() => handleNavClick('predict')}
+            className="inline-flex items-center gap-1.5 px-3 sm:px-3.5 py-2 text-xs sm:text-sm font-semibold text-white bg-blue-600 rounded-lg hover:bg-blue-700 active:bg-blue-800 transition-all shadow-xs whitespace-nowrap cursor-pointer"
           >
-            <Upload className="w-3.5 h-3.5 sm:w-4 sm:h-4 shrink-0" />
-            <span className="hidden xs:inline">{t.nav.uploadDataset}</span>
-            <span className="xs:hidden">{t.nav.upload}</span>
+            <Play className="w-3.5 h-3.5 fill-current" />
+            <span className="hidden sm:inline">{t.nav.predictCompounds || 'Predict Compounds'}</span>
+            <span className="sm:hidden">Prediksi</span>
           </button>
 
           {/* Mobile Hamburger Toggle Button */}
           <button
             type="button"
             onClick={() => setMobileMenuOpen((prev) => !prev)}
-            className="md:hidden p-2 rounded-lg text-slate-600 hover:text-slate-900 hover:bg-slate-100 transition-colors focus:outline-none cursor-pointer"
+            className="lg:hidden p-2 rounded-lg text-slate-600 hover:text-slate-900 hover:bg-slate-100 transition-colors focus:outline-none cursor-pointer"
             aria-label="Toggle mobile menu"
           >
             {mobileMenuOpen ? <X className="w-5 h-5" /> : <Menu className="w-5 h-5" />}
@@ -111,42 +128,34 @@ export const Navbar: React.FC<NavbarProps> = ({ currentView, onNavigate, onScrol
 
       {/* Mobile Drawer Dropdown */}
       {mobileMenuOpen && (
-        <div className="md:hidden border-t border-slate-200 bg-white/98 backdrop-blur-lg px-4 pt-3 pb-5 space-y-2 animate-in slide-in-from-top-2 duration-200 shadow-lg">
-          <button
-            onClick={() => handleNavClick('home')}
-            className={`w-full text-left px-3 py-2.5 rounded-lg text-sm font-semibold transition-colors ${
-              currentView === 'home'
-                ? 'bg-blue-50 text-blue-600'
-                : 'text-slate-700 hover:bg-slate-50'
-            }`}
-          >
-            {t.nav.home}
-          </button>
-
-          <button
-            onClick={() => handleNavClick('upload')}
-            className={`w-full text-left px-3 py-2.5 rounded-lg text-sm font-semibold transition-colors ${
-              currentView === 'upload'
-                ? 'bg-blue-50 text-blue-600'
-                : 'text-slate-700 hover:bg-slate-50'
-            }`}
-          >
-            {t.nav.upload}
-          </button>
-
-          <button
-            onClick={() => handleNavClick('home', 'how-it-works')}
-            className="w-full text-left px-3 py-2.5 rounded-lg text-sm font-medium text-slate-700 hover:bg-slate-50 transition-colors"
-          >
-            {t.nav.howItWorks}
-          </button>
-
-          <button
-            onClick={() => handleNavClick('home', 'about')}
-            className="w-full text-left px-3 py-2.5 rounded-lg text-sm font-medium text-slate-700 hover:bg-slate-50 transition-colors"
-          >
-            {t.nav.about}
-          </button>
+        <div className="lg:hidden border-t border-slate-200 bg-white px-4 pt-3 pb-5 space-y-1.5 shadow-xl animate-in slide-in-from-top-2 duration-150">
+          {navLinks.map((link) => {
+            const isActive = currentView === link.id;
+            return (
+              <button
+                key={link.id}
+                onClick={() => handleNavClick(link.id)}
+                className={`w-full text-left px-3 py-2.5 rounded-lg text-sm font-medium transition-colors flex items-center justify-between ${
+                  isActive
+                    ? 'bg-blue-50 text-blue-700 font-semibold'
+                    : 'text-slate-700 hover:bg-slate-50'
+                }`}
+              >
+                <span>{link.label}</span>
+                {isActive && <div className="w-1.5 h-1.5 rounded-full bg-blue-600" />}
+              </button>
+            );
+          })}
+          <div className="pt-2 border-t border-slate-100">
+            <button
+              onClick={() => handleNavClick('upload')}
+              className={`w-full text-left px-3 py-2 rounded-lg text-xs transition-colors text-slate-500 hover:bg-slate-50 ${
+                currentView === 'upload' ? 'bg-slate-100 text-slate-900 font-medium' : ''
+              }`}
+            >
+              📊 {t.nav.upload || 'Dataset Validator (CSV/Excel)'}
+            </button>
+          </div>
         </div>
       )}
     </header>

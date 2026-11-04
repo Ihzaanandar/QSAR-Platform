@@ -109,3 +109,145 @@ export interface SampleDatasetInfo {
   category: 'valid' | 'warning' | 'error';
   filename: string;
 }
+
+// ============================================================================
+// QSAR PLATFORM v2.0 TYPE DEFINITIONS
+// ============================================================================
+
+export interface TargetMetadata {
+  chembl_id: string;
+  pref_name: string;
+  target_type: string;
+  organism: string;
+  synonyms: string[];
+  description?: string;
+}
+
+export interface ModelBenchmarkMetrics {
+  r2: number;
+  rmse: number;
+  mae: number;
+  q2: number;
+  spearman: number;
+}
+
+export interface BenchmarkComparisonItem {
+  model_name: string;
+  test_r2: number;
+  test_rmse: number;
+  test_mae: number;
+  cv_q2: number;
+  cv_rmse_mean: number;
+  cv_rmse_std: number;
+  spearman: number;
+  train_time_sec: number;
+  is_best?: boolean;
+}
+
+export interface ModelScatterPoint {
+  actual: number;
+  predicted: number;
+  residual: number;
+  compound_id: string;
+  smiles?: string;
+}
+
+export interface TrainingQualitySummary {
+  total_raw_records: number;
+  valid_curated_records: number;
+  unique_compounds: number;
+  invalid_smiles: number;
+  duplicate_records: number;
+  pic50_min?: number;
+  pic50_max?: number;
+  pic50_mean?: number;
+  pic50_std?: number;
+  activity_distribution?: Array<{ range: string; count: number }>;
+}
+
+export interface TrainingJobResult {
+  job_id: string;
+  target_chembl_id: string;
+  target_name: string;
+  endpoint: string;
+  unit: string;
+  organism: string;
+  dataset_quality: TrainingQualitySummary;
+  benchmark_comparison: BenchmarkComparisonItem[];
+  best_model_name: string;
+  best_metrics: ModelBenchmarkMetrics;
+  scatter_plot: ModelScatterPoint[];
+  split_summary: {
+    method: string;
+    train_size: number;
+    test_size: number;
+    cv_folds?: number;
+  };
+}
+
+export interface TrainingJobStatusData {
+  job_id: string;
+  status: 'queued' | 'fetching_data' | 'curating_data' | 'preprocessing' | 'training' | 'evaluating' | 'completed' | 'failed';
+  progress: number;
+  current_step: string;
+  error_message?: string | null;
+  chembl_target_id?: string;
+  target_name?: string;
+  endpoint?: string;
+  has_results: boolean;
+}
+
+export interface QSARModelItem {
+  id: string;
+  model_name: string;
+  chembl_target_id: string;
+  target_name: string;
+  organism: string;
+  endpoint: string;
+  unit: string;
+  algorithm: string;
+  version: string;
+  status: 'available' | 'training' | 'error';
+  metrics?: ModelBenchmarkMetrics;
+  metadata?: Record<string, any>;
+  created_at?: string;
+}
+
+export interface MultiTargetPredictionItem {
+  row_index: number;
+  compound_id: string;
+  smiles: string;
+  canonical_smiles: string | null;
+  predicted_pIC50: number | null;
+  predicted_IC50_nM: number | null;
+  activity_class: 'Active' | 'Moderate' | 'Inactive' | null;
+  nearest_tanimoto: number | null;
+  applicability_status: 'In Domain' | 'Borderline' | 'Out of Domain' | null;
+  status: 'SUCCESS' | 'FAILED';
+  error_reason?: string | null;
+}
+
+export interface MultiTargetPredictionResult {
+  success: boolean;
+  prediction_id: string;
+  target: string;
+  target_chembl_id: string;
+  model_name: string;
+  endpoint: string;
+  unit: string;
+  algorithm: string;
+  summary: {
+    total_compounds: number;
+    valid_compounds: number;
+    invalid_compounds: number;
+    duplicate_structures: number;
+    active_count: number;
+    moderate_count: number;
+    inactive_count: number;
+    mean_tanimoto: number | null;
+    processing_time_sec: number;
+  };
+  predictions: MultiTargetPredictionItem[];
+  download_url: string;
+}
+

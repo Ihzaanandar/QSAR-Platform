@@ -4,7 +4,7 @@
  */
 
 import React, { useState } from 'react';
-import { Navbar } from './components/Navbar';
+import { Navbar, AppView } from './components/Navbar';
 import { HeroSection } from './components/HeroSection';
 import { UploadSection } from './components/UploadSection';
 import { ProcessingState } from './components/ProcessingState';
@@ -13,13 +13,20 @@ import { ValidationResultError } from './components/ValidationResultError';
 import { HowItWorksSection } from './components/HowItWorksSection';
 import { AboutSection } from './components/AboutSection';
 import { Footer } from './components/Footer';
+import { TrainModelPage } from './components/TrainModel/TrainModelPage';
+import { PredictCompoundsPage } from './components/PredictCompounds/PredictCompoundsPage';
+import { ModelLibraryPage } from './components/ModelLibrary/ModelLibraryPage';
+import { DocumentationPage } from './components/Documentation/DocumentationPage';
 import { DatasetSummary } from './types/dataset';
 import { uploadDatasetFile } from './lib/api';
 import { useLanguage } from './context/LanguageContext';
 
 export default function App() {
   const { t } = useLanguage();
-  const [currentView, setCurrentView] = useState<'home' | 'upload'>('home');
+  const [currentView, setCurrentView] = useState<AppView>('home');
+  const [selectedModelId, setSelectedModelId] = useState<string | undefined>(undefined);
+
+  // Upload/validation state for legacy dataset validator
   const [uploadState, setUploadState] = useState<'idle' | 'processing' | 'success' | 'error'>('idle');
   const [selectedFileName, setSelectedFileName] = useState<string>('');
   const [datasetResult, setDatasetResult] = useState<DatasetSummary | null>(null);
@@ -32,7 +39,7 @@ export default function App() {
 
     const result = await uploadDatasetFile(file);
 
-    if (result.success) { 
+    if (result.success) {
       setDatasetResult(result.data);
       setUploadState('success');
     } else {
@@ -56,8 +63,14 @@ export default function App() {
     }
   };
 
-  const navigateToUpload = () => {
-    setCurrentView('upload');
+  const navigateTo = (view: AppView) => {
+    setCurrentView(view);
+    window.scrollTo({ top: 0, behavior: 'smooth' });
+  };
+
+  const handleUseModelForPrediction = (modelId: string) => {
+    setSelectedModelId(modelId);
+    setCurrentView('predict');
     window.scrollTo({ top: 0, behavior: 'smooth' });
   };
 
@@ -65,18 +78,18 @@ export default function App() {
     <div className="min-h-screen bg-slate-50 flex flex-col justify-between selection:bg-blue-100 selection:text-blue-900">
       <Navbar
         currentView={currentView}
-        onNavigate={(view) => {
-          setCurrentView(view);
-          window.scrollTo({ top: 0, behavior: 'smooth' });
-        }}
+        onNavigate={navigateTo}
         onScrollToSection={handleScrollToSection}
       />
 
       <main className="flex-1">
+        {/* VIEW 1: HOME */}
         {currentView === 'home' && (
           <>
             <HeroSection
-              onStartUpload={navigateToUpload}
+              onStartUpload={() => navigateTo('upload')}
+              onTrainModel={() => navigateTo('train')}
+              onPredictCompounds={() => navigateTo('predict')}
               onLearnMore={() => handleScrollToSection('how-it-works')}
             />
 
@@ -123,11 +136,52 @@ export default function App() {
               </div>
             </div>
 
-            <HowItWorksSection onStartUpload={navigateToUpload} />
+            <HowItWorksSection onStartUpload={() => navigateTo('upload')} />
             <AboutSection />
           </>
         )}
 
+        {/* VIEW 2: TRAIN MODEL (FEATURE 1) */}
+        {currentView === 'train' && (
+          <TrainModelPage
+            onNavigateToPredict={(modelId) => {
+              if (modelId) setSelectedModelId(modelId);
+              navigateTo('predict');
+            }}
+            onNavigateToModels={() => navigateTo('models')}
+          />
+        )}
+
+        {/* VIEW 3: PREDICT COMPOUNDS (FEATURE 2) */}
+        {currentView === 'predict' && (
+          <PredictCompoundsPage
+            initialModelId={selectedModelId}
+            onNavigateToTrain={() => navigateTo('train')}
+            onNavigateToModels={() => navigateTo('models')}
+          />
+        )}
+
+        {/* VIEW 4: MODEL LIBRARY */}
+        {currentView === 'models' && (
+          <ModelLibraryPage
+            onUseForPrediction={handleUseModelForPrediction}
+            onNavigateToTrain={() => navigateTo('train')}
+          />
+        )}
+
+        {/* VIEW 5: DOCUMENTATION */}
+        {currentView === 'docs' && (
+          <DocumentationPage />
+        )}
+
+        {/* VIEW 6: ABOUT */}
+        {currentView === 'about' && (
+          <div className="py-8">
+            <AboutSection />
+          </div>
+        )}
+
+        {/* VIEW 7: DATASET VALIDATOR (LEGACY UPLOAD) */}
         {currentView === 'upload' && (
           <div className="py-8">
             {uploadState === 'idle' && (

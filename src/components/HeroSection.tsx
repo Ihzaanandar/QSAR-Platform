@@ -1,14 +1,22 @@
 import React from 'react';
-import { ArrowRight, FileSpreadsheet, ShieldCheck, Database, Info, CheckCircle2 } from 'lucide-react';
+import { ArrowRight, FileSpreadsheet, ShieldCheck, Database, Info, CheckCircle2, Brain, Play } from 'lucide-react';
 import { useLanguage } from '../context/LanguageContext';
 
 interface HeroSectionProps {
   onStartUpload: () => void;
+  onTrainModel?: () => void;
+  onPredictCompounds?: () => void;
   onLearnMore: () => void;
 }
 
-export const HeroSection: React.FC<HeroSectionProps> = ({ onStartUpload, onLearnMore }) => {
-  const { t } = useLanguage();
+export const HeroSection: React.FC<HeroSectionProps> = ({
+  onStartUpload,
+  onTrainModel,
+  onPredictCompounds,
+  onLearnMore
+}) => {
+  const { t, language } = useLanguage();
+  const isId = language === 'id';
 
   return (
     <div className="relative overflow-hidden pt-8 pb-16 lg:pt-14 lg:pb-24">
@@ -16,10 +24,10 @@ export const HeroSection: React.FC<HeroSectionProps> = ({ onStartUpload, onLearn
       <div className="absolute inset-0 bg-[linear-gradient(to_right,#e2e8f0_1px,transparent_1px),linear-gradient(to_bottom,#e2e8f0_1px,transparent_1px)] bg-[size:4rem_4rem] [mask-image:radial-gradient(ellipse_60%_50%_at_50%_0%,#000_70%,transparent_100%)] opacity-40 pointer-events-none" />
 
       <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 relative">
-        {/* Prototype Version pill notice */}
+        {/* Version 2.0 pill notice */}
         <div className="inline-flex items-center gap-2 px-3 py-1 rounded-full bg-blue-50 border border-blue-200 text-blue-700 text-xs font-medium mb-6">
           <Info className="w-3.5 h-3.5" />
-          <span>{t.hero.prototypeBadge}</span>
+          <span>Multi-Target QSAR Modeling & Bioactivity Prediction Platform · v2.0</span>
         </div>
 
         {/* Hero Split Grid */}
@@ -31,29 +39,34 @@ export const HeroSection: React.FC<HeroSectionProps> = ({ onStartUpload, onLearn
                 {t.hero.subtitle}
               </span>
               <h1 className="text-3xl sm:text-5xl lg:text-6xl font-extrabold tracking-tight text-slate-900 leading-[1.15]">
-                {t.hero.titlePrefix} <br />
-                <span className="text-blue-600">{t.hero.titleHighlight}</span>
+                Multi-Target <br />
+                <span className="text-blue-600">QSAR Platform</span>
               </h1>
               <p className="text-base sm:text-lg text-slate-600 max-w-xl leading-relaxed">
-                {t.hero.description}
+                {isId
+                  ? 'Platform terpadu untuk melatih model QSAR multi-target dari ChEMBL atau CSV in-house, serta memprediksi afinitas bioaktivitas senyawa tanaman dengan analisis domain penerapan.'
+                  : 'An integrated platform to train multi-target QSAR models from ChEMBL or custom CSVs, and predict herbal plant bioactivities with applicability domain confidence.'}
               </p>
             </div>
 
             {/* CTAs */}
             <div className="flex flex-col sm:flex-row items-stretch sm:items-center gap-3 sm:gap-4 pt-2">
               <button
-                onClick={onStartUpload}
+                onClick={onPredictCompounds || onStartUpload}
                 className="inline-flex items-center justify-center gap-2.5 px-6 py-3.5 text-sm sm:text-base font-semibold text-white bg-blue-600 rounded-xl hover:bg-blue-700 active:bg-blue-800 transition-all shadow-md shadow-blue-500/20 whitespace-nowrap cursor-pointer"
               >
-                <span>{t.hero.ctaUpload}</span>
-                <ArrowRight className="w-4 h-4" />
+                <Play className="w-4 h-4 fill-current" />
+                <span>{isId ? 'Prediksi Senyawa Tanaman' : 'Predict Compounds'}</span>
               </button>
-              <button
-                onClick={onLearnMore}
-                className="inline-flex items-center justify-center gap-2 px-5 py-3.5 text-sm sm:text-base font-medium text-slate-700 bg-white border border-slate-200 rounded-xl hover:bg-slate-50 hover:text-slate-900 transition-all shadow-sm whitespace-nowrap cursor-pointer"
-              >
-                <span>{t.hero.ctaLearn}</span>
-              </button>
+              {onTrainModel && (
+                <button
+                  onClick={onTrainModel}
+                  className="inline-flex items-center justify-center gap-2 px-5 py-3.5 text-sm sm:text-base font-medium text-slate-700 bg-white border border-slate-200 rounded-xl hover:bg-slate-50 hover:text-slate-900 transition-all shadow-sm whitespace-nowrap cursor-pointer"
+                >
+                  <Brain className="w-4 h-4 text-blue-600" />
+                  <span>{isId ? 'Latih Model QSAR' : 'Train QSAR Model'}</span>
+                </button>
+              )}
             </div>
 
             {/* Quick trust metrics */}
@@ -64,11 +77,11 @@ export const HeroSection: React.FC<HeroSectionProps> = ({ onStartUpload, onLearn
               </div>
               <div className="flex items-center gap-1.5">
                 <CheckCircle2 className="w-4 h-4 text-emerald-600 shrink-0" />
-                <span>{t.hero.trustUniversal}</span>
+                <span>Morgan ECFP4 Fingerprints</span>
               </div>
               <div className="flex items-center gap-1.5">
                 <CheckCircle2 className="w-4 h-4 text-emerald-600 shrink-0" />
-                <span>{t.hero.trustLimit}</span>
+                <span>Bemis-Murcko Scaffold Split</span>
               </div>
             </div>
           </div>
