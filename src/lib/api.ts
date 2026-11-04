@@ -1,6 +1,11 @@
 import { ApiResponse, QsarPredictionResult, ProblematicRowItem } from '../types/dataset';
 
-export const API_BASE_URL = (import.meta.env.VITE_API_URL || '').replace(/\/$/, '');
+const PROD_RAILWAY_URL = 'https://qsar-platform-production.up.railway.app';
+
+export const API_BASE_URL = (
+  import.meta.env.VITE_API_URL ||
+  (typeof window !== 'undefined' && window.location.hostname !== 'localhost' ? PROD_RAILWAY_URL : '')
+).replace(/\/$/, '');
 
 export async function uploadDatasetFile(file: File): Promise<ApiResponse> {
   const formData = new FormData();

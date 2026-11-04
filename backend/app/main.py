@@ -19,14 +19,6 @@ app = FastAPI(
 )
 
 # Configuration from environment variables
-raw_origins = os.getenv("ALLOWED_ORIGINS", "*")
-if raw_origins.strip() == "*":
-    ALLOWED_ORIGINS = ["*"]
-    ALLOW_CREDENTIALS = False
-else:
-    ALLOWED_ORIGINS = [o.strip() for o in raw_origins.split(",") if o.strip()]
-    ALLOW_CREDENTIALS = True
-
 MAX_UPLOAD_SIZE_MB = int(os.getenv("MAX_UPLOAD_SIZE_MB", "10"))
 MAX_UPLOAD_SIZE_BYTES = MAX_UPLOAD_SIZE_MB * 1024 * 1024
 UPLOAD_DIR = Path(os.getenv("UPLOAD_DIR", "/data/uploads"))
@@ -37,10 +29,12 @@ UPLOAD_DIR.mkdir(parents=True, exist_ok=True)
 # In-memory store for prototype
 db_dataset_store: Dict[str, Dict[str, Any]] = {}
 
+# Allow all origins (Vercel, Railway, localhost) seamlessly
 app.add_middleware(
     CORSMiddleware,
-    allow_origins=ALLOWED_ORIGINS,
-    allow_credentials=ALLOW_CREDENTIALS,
+    allow_origin_regex=r".*",
+    allow_origins=["*"],
+    allow_credentials=False,
     allow_methods=["*"],
     allow_headers=["*"],
 )
